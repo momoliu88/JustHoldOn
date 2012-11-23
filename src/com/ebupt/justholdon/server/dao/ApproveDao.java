@@ -1,0 +1,6 @@
+package com.ebupt.justholdon.server.dao;
+
+import com.ebupt.justholdon.server.entity.Approve;
+
+public interface ApproveDao  extends GenericHibernateDao<Approve, Integer>{
+}
