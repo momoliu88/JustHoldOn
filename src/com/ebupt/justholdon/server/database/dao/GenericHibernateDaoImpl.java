@@ -44,7 +44,6 @@ public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
 	@Override
 	public void update(T transientObject) {
 		currentSession().update(transientObject);
-		currentSession().flush();
 	}
 
 	@Override
@@ -114,7 +113,6 @@ public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
 		}
 		update.deleteCharAt(update.length() - 1);
 		update.append(" where ").append("id = ").append(id.toString());
-
 		Query query = currentSession().createQuery(update.toString());
 		for (Entry<String, Object> entry : infos.entrySet()) {
 			query.setParameter(entry.getKey(), entry.getValue());
@@ -131,5 +129,15 @@ public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
 	@Override
 	public void saveOrUpdate(T transientObject) {
 		currentSession().saveOrUpdate(transientObject);
+	}
+
+	@Override
+	public void merge(T transientObject) {
+		currentSession().merge(transientObject);
+	}
+
+	@Override
+	public void flush() {
+		currentSession().flush();
 	}
 }

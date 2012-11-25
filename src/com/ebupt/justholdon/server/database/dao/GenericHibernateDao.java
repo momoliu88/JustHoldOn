@@ -25,6 +25,7 @@ public interface GenericHibernateDao<T, PK extends Serializable> {
 	/** Save changes made to a persistent object. */
 	void update(T transientObject);
 	int update(PK id,Map<String,Object> infos);
+	void merge(T transientObject);
 	void saveOrUpdate(T transientObject);
 
 	/** Remove an object from persistent storage in the database */
@@ -32,7 +33,7 @@ public interface GenericHibernateDao<T, PK extends Serializable> {
 
 	void delete(PK id);
 
-
+	void flush();
 	List<?> find(String sql, Object... args);
 
 	List<T> findAll();

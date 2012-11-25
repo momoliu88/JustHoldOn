@@ -61,10 +61,11 @@ public class UserFieldServiceImpl implements UserFieldService {
 		userFieldDao.update(transientObject);
 	}
 
-	@Override
-	public void delete(UserField persistentObject) {
-		userFieldDao.delete(persistentObject);
-	}
+//	
+//	@Override
+//	public void delete(UserField persistentObject) {
+//		userFieldDao.delete(persistentObject);
+//	}
 
 	@Override
 	public void delete(Long id) {
@@ -75,10 +76,10 @@ public class UserFieldServiceImpl implements UserFieldService {
 	public List<UserField> findAll() {
 		return userFieldDao.findAll();
 	}
-
-	@Override
-	public UserField load(Long id) {
-		return userFieldDao.load(id);
-	}
+//
+//	@Override
+//	public UserField load(Long id) {
+//		return userFieldDao.load(id);
+//	}
 
 }

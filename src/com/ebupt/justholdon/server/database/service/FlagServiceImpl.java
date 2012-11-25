@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +23,6 @@ import com.ebupt.justholdon.server.database.entity.User;
 public class FlagServiceImpl implements FlagService {
 	public FlagServiceImpl() {
 	};
-
-	private Logger logger = Logger.getLogger(FlagServiceImpl.class);
 	@Autowired
 	private FlagDao flagDao;
 	@Autowired
@@ -78,11 +75,11 @@ public class FlagServiceImpl implements FlagService {
 		return flagDao.update(id, infos);
 	}
 
-	@Override
-	@Transactional(readOnly = false)
-	public void delete(Flag persistentObject) {
-		flagDao.delete(persistentObject);
-	}
+	// @Override
+	// @Transactional(readOnly = false)
+	// public void delete(Flag persistentObject) {
+	// flagDao.delete(persistentObject);
+	// }
 
 	@Override
 	@Transactional(readOnly = false)
@@ -90,14 +87,18 @@ public class FlagServiceImpl implements FlagService {
 		flagDao.delete(id);
 	}
 
-	@Override
-	public Flag load(Integer id) {
-		return flagDao.load(id);
-	}
-
+	/*
+	 * @Override public Flag load(Integer id) { return flagDao.load(id); }
+	 */
 	@Override
 	@Transactional(readOnly = false)
-	public void addUser(User user, Flag flag) {
+	public void addUser(Long uid, Integer flagid) {
+		User user = userDao.get(uid);
+		Flag flag = flagDao.get(flagid);
+		if (null == flag || null == user)
+			return;
+		if (user.getFlags().contains(flag) && flag.getUsers().contains(user))
+			return;
 		flag.getUsers().add(user);
 		user.getFlags().add(flag);
 		flagDao.update(flag);
@@ -106,7 +107,14 @@ public class FlagServiceImpl implements FlagService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public void removeUser(User user, Flag flag) {
+	public void removeUser(Long uid, Integer fid) {
+		User user = userDao.get(uid);
+		Flag flag = flagDao.get(fid);
+		if (null == flag || null == user)
+			return;
+		if (!user.getFlags().contains(flag) && !flag.getUsers().contains(user))
+			return;
+		System.out.println("begin removes");
 		flag.getUsers().remove(user);
 		user.getFlags().remove(flag);
 		flagDao.update(flag);
@@ -116,7 +124,13 @@ public class FlagServiceImpl implements FlagService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public void addHabit(Habit habit, Flag flag) {
+	public void addHabit(Integer hid, Integer fid) {
+		Habit habit = habitDao.get(hid);
+		Flag flag = flagDao.get(fid);
+		if (null == flag || null == habit)
+			return;
+		if (habit.getFlags().contains(flag) && flag.getHabits().contains(habit))
+			return;
 		flag.getHabits().add(habit);
 		habit.getFlags().add(flag);
 		flagDao.update(flag);
@@ -125,7 +139,14 @@ public class FlagServiceImpl implements FlagService {
 
 	@Override
 	@Transactional(readOnly = false)
-	public void removeHabit(Habit habit, Flag flag) {
+	public void removeHabit(Integer hid, Integer fid) {
+		Habit habit = habitDao.get(hid);
+		Flag flag = flagDao.get(fid);
+		if (null == flag || null == habit)
+			return;
+		if (!habit.getFlags().contains(flag)
+				&& !flag.getHabits().contains(habit))
+			return;
 		flag.getHabits().remove(habit);
 		habit.getFlags().remove(flag);
 		flagDao.update(flag);
@@ -135,25 +156,11 @@ public class FlagServiceImpl implements FlagService {
 	@Override
 	public List<Flag> findAll(boolean byHot, Integer start, Integer end) {
 		List<Flag> flags = findAll(byHot);
-		for (Flag flag : flags)
-			System.out.println(flag.getContent());
-		System.out.println(start + " => " + end + "[0]" + flags.get(0));
-		if (null == flags || flags.isEmpty()) {
-			logger.debug("flags is empty");
-			return null;
-		}
-		if (start < 0 || end < 0) {
-			logger.warn("startIndex:" + start + ",endIndex:" + end
-					+ " can't < 0");
-			return null;
-		}
-		if (start >= end) {
-			logger.warn("startIndex:" + start + ",endIndex:" + end + " error");
-			return null;
-		}
-		if (end > flags.size())
-			end = flags.size();
-		return flags.subList(start, end);
+//		for (Flag flag : flags)
+//			System.out.println(flag.getContent());
+//		System.out.println(start + " => " + end + "[0]" + flags.get(0));
+		
+		return Utils.subList(start, end, flags);
 	}
 
 	@Override
@@ -165,13 +172,11 @@ public class FlagServiceImpl implements FlagService {
 				.append(" =?").toString();
 		@SuppressWarnings("unchecked")
 		List<Flag> flags = (List<Flag>) flagDao.find(hql, targetType);
-		if (null == flags || flags.isEmpty())
+		if (null == flags)
 			return null;
 		Collections.sort(flags, Flag.getHotComparator());
+		return Utils.subList(start, end, flags);
 
-		if (start >= 0 && start < end && end <= flags.size())
-			return flags.subList(start, end);
-		return flags;
 	}
 
 	@Override
@@ -189,12 +194,18 @@ public class FlagServiceImpl implements FlagService {
 		for (Integer flagId : flagIds) {
 			Flag flag = flagDao.get(flagId);
 			Set<Habit> habits = flag.getHabits();
-			for(Habit habit:habits)
-				result.add(habit);		
+			for (Habit habit : habits)
+				result.add(habit);
 		}
 		List<Habit> habits = new ArrayList<Habit>(result);
-		Collections.sort(habits,Habit.getHotComparator());
+		Collections.sort(habits, Habit.getHotComparator());
 		return habits;
 	}
 
+	@Override
+	public List<Habit> findHabits(List<Integer> flagIds, Integer start,
+			Integer end) {
+		List<Habit> habits = findHabits(flagIds);
+		return Utils.subList(start, end, habits);
+	}
 }

@@ -15,7 +15,7 @@ public class ExceptionCatcher {
 	public void throwExp(Exception ex) throws DBServiceException
 	{
 		logger.warn("Exception By DBService",ex);
-		throw new DBServiceException(ex.getMessage());
+		//throw new DBServiceException(ex.getMessage());
 	}
 	
 	

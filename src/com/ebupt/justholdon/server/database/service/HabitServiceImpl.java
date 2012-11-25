@@ -39,11 +39,11 @@ public class HabitServiceImpl implements HabitService {
 	public Habit get(Integer id) {
 		return habitDao.get(id);
 	}
-
-	@Override
-	public Habit load(Integer id) {
-		return habitDao.load(id);
-	}
+//
+//	@Override
+//	public Habit load(Integer id) {
+//		return habitDao.load(id);
+//	}
 
 	@Override
 	public void update(Habit transientObject) {
@@ -54,11 +54,11 @@ public class HabitServiceImpl implements HabitService {
 	public int update(Integer id, Map<String, Object> infos) {
 		return habitDao.update(id, infos);
 	}
-
-	@Override
-	public void delete(Habit persistentObject) {
-		habitDao.delete(persistentObject);
-	}
+	
+//	@Override
+//	public void delete(Habit persistentObject) {
+//		habitDao.delete(persistentObject);
+//	}
 
 	@Override
 	public void delete(Integer id) {
@@ -73,6 +73,7 @@ public class HabitServiceImpl implements HabitService {
 	@Override
 	public List<Habit> findAll(boolean byHot) {
 		List<Habit> list = habitDao.findAll();
+		if(null == list) return null;
 		if (byHot)
 			Collections.sort(list, Habit.getHotComparator());
 		return list;
@@ -106,8 +107,6 @@ public class HabitServiceImpl implements HabitService {
 		String hql = new StringBuilder().append("from ").append(habitTbName)
 				.append(" H ").append(" where ").append(columnName)
 				.append(" =?").toString();
-		System.out.println("+++++++++++++++++++");
-		System.out.println(hql);
 		List<?> results = habitDao.find(hql, groupName);
 		if (results.isEmpty())
 			return null;
@@ -155,6 +154,18 @@ public class HabitServiceImpl implements HabitService {
 			ret.add(new HabitGroupName().setHabitnum(entry.getValue()).setName(entry.getKey()));
 		}
 		return ret;
+	}
+
+	@Override
+	public List<Habit> findAll(boolean byHot, Integer start, Integer end) {
+		List<Habit> habits = findAll(byHot);
+		return Utils.subList(start, end, habits);
+	}
+
+	@Override
+	public List<Habit> findAGroup(String groupName, Integer start, Integer end) {
+		 List<Habit> habits = findAGroup(groupName);
+		return Utils.subList(start, end, habits);
 	}
 
 }

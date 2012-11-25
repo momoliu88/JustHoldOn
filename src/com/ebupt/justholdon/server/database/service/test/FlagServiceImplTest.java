@@ -29,6 +29,9 @@ public class FlagServiceImplTest {
 	HabitService habitService;
 	User user1;
 	List<Integer> flagIds = new ArrayList<Integer>();
+	List<Integer> hids = new ArrayList<Integer>();
+	List<Long> uids = new ArrayList<Long>();
+
 	User user2;
 	Flag flag1;
 	Flag flag2;
@@ -62,11 +65,13 @@ public class FlagServiceImplTest {
 				.setGroupName("group1").setType(HabitType.SYSTEM)
 				.setUnit(PersistUnit.DAY);
 
-		habitService.save(habit1);
-		habitService.save(habit2);
-		habitService.save(habit3);
-		userService.save(user2);
-		userService.save(user1);
+		hids.add(habitService.save(habit1));
+		hids.add(habitService.save(habit2));
+		hids.add(habitService.save(habit3));
+		
+		uids.add( userService.save(user2));
+		uids.add(userService.save(user1));
+
 
 		flag1 = new Flag().setContent("flag2").setTarget("type1");
 		flag2 = new Flag().setContent("flag1").setTarget("type1");
@@ -76,42 +81,58 @@ public class FlagServiceImplTest {
 		flagIds.add(flagService.save(flag2));
 		flagIds.add(flagService.save(flag3));
 
-		flagService.addUser(user2, flag1);
-		flagService.addUser(user1, flag1);
+		User _user = userService.get(uids.get(0));
+		_user.setUserName("*********");
+		userService.update(_user);
+		User _user2 = userService.get(uids.get(1));
+		userService.update(_user2);
 		
-		flagService.addHabit(habit1, flag1);
-		flagService.addHabit(habit1, flag2);
-		flagService.addHabit(habit1, flag3);
+//		_user2.getFlags().add(flag1);
+//		flag1.getUsers().add(_user2);
+//		flagService.update(flag1);
+//		userService.update(_user2);
+		
+		flagService.addUser(uids.get(0), flagIds.get(0));
+		flagService.addUser(uids.get(1), flagIds.get(0));
+		
+		flagService.addUser(uids.get(1), flagIds.get(0));
 
-		flagService.addHabit(habit2, flag1);
-		flagService.addHabit(habit3, flag1);
+		flagService.addHabit(hids.get(0), flagIds.get(0));
+		flagService.addHabit(hids.get(1), flagIds.get(1));
+		flagService.addHabit(hids.get(2), flagIds.get(2));
+
+		flagService.addHabit(hids.get(1), flagIds.get(0));
+		flagService.addHabit(hids.get(2), flagIds.get(0));
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		flagIds.clear();
 		
-		flagService.removeUser(user1, flag1);
-		flagService.removeUser(user2, flag1);
+		flagService.removeUser(uids.get(0), flagIds.get(0));
+		flagService.removeUser(uids.get(1), flagIds.get(0));
 		
-		flagService.removeHabit(habit1, flag1);
-		flagService.removeHabit(habit1, flag2);
-		flagService.removeHabit(habit1, flag3);
+		
+		flagService.removeHabit(hids.get(0), flagIds.get(0));
+		flagService.removeHabit(hids.get(1), flagIds.get(1));
+		flagService.removeHabit(hids.get(2), flagIds.get(2));
 
-		flagService.removeHabit(habit2, flag1);
-		flagService.removeHabit(habit3, flag1);	
+		flagService.removeHabit(hids.get(1), flagIds.get(0));
+		flagService.removeHabit(hids.get(2), flagIds.get(0));	
 		
-		flagService.delete(flag1);
-		flagService.delete(flag2);
-		flagService.delete(flag3);
+		flagService.delete(flagIds.get(0));
+		flagService.delete(flagIds.get(1));
+		flagService.delete(flagIds.get(2));
 		
-		habitService.delete(habit1);
-		habitService.delete(habit2);
-		habitService.delete(habit3);
-		
-		userService.delete(user1);
-		userService.delete(user2);
+		System.out.println(" delete uid");
 
+		for(Long id:uids)
+			userService.delete(id);
+		for(Integer id:hids)
+		{
+			System.out.println("id "+id);
+			habitService.delete(id);
+		}
+		
 	}
 
 	@Test
@@ -119,7 +140,7 @@ public class FlagServiceImplTest {
 		List<Flag> flags = flagService.findAll(true);
 		assertEquals("flag2", flags.get(0).getContent());
 	}
-
+/*
 	@Test
 	public void testFindAllSTARTEND() {
 		List<Flag> results = flagService.findAll(true, 0, 2);
@@ -159,4 +180,5 @@ public class FlagServiceImplTest {
 		List<Integer> ids = flagIds;
 		assertEquals(3,flagService.findHabitCounts(ids));
 	}
+	*/
 }

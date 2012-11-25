@@ -31,7 +31,7 @@ public class Habit {
  	private String stages;
 	private String groupName;
 	private String description;
-
+	private int times;
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CheckIn> checkIns = new HashSet<CheckIn>();
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -40,6 +40,15 @@ public class Habit {
 	private Set<Flag> flags = new HashSet<Flag>();
 	
 	
+	public int getTimes() {
+		return times;
+	}
+
+	public Habit setTimes(int times) {
+		this.times = times;
+		return this;
+	}
+
 	public Set<Flag> getFlags() {
 		return flags;
 	}

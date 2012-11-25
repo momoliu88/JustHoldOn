@@ -36,5 +36,8 @@
 	<classpathentry kind="lib" path="lib/aopalliance-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate-jpa-2.0-api-1.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="lib/JavaPNS_2.2.jar"/>
+	<classpathentry kind="lib" path="lib/bcprov-jdk16-145-1.jar"/>
+	<classpathentry kind="lib" path="lib/javapns-jdk16-163.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -49,5 +49,10 @@ public class HabitDaoImplTest {
 		_habit = habitDao.read(id);
 		assertEquals("new",_habit.getHabitName());
 	}
+	@Test
+	public void testDelete() {
+		 habitDao.delete(id);
+		
+	}
 
 }

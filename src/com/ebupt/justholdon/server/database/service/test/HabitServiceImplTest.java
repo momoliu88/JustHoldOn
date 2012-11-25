@@ -3,9 +3,8 @@ package com.ebupt.justholdon.server.database.service.test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -74,38 +73,46 @@ public class HabitServiceImplTest {
 		uids.add(userService.save(user));
 		uids.add(userService.save(user1));
 		uids.add(userService.save(user2));
-		
-		userService.beFriend(user1, user);
-		userService.beFriend(user1, user2);
+
+		userService.beFriend(uids.get(1), uids.get(0));
+		userService.beFriend(uids.get(1), uids.get(2));
 		userHabit = new UserHabit();
 		userHabit1 = new UserHabit();
 		userHabit2 = new UserHabit();// .setHabit(habit2).setUser(user1);
 		userHabit3 = new UserHabit();// .setHabit(habit).setUser(user);
 		userHabit4 = new UserHabit();// .setHabit(habit).setUser(user);
 
-		userHabitService.connectUserHabit(user, habit, userHabit);
-		userHabitService.connectUserHabit(user, habit1, userHabit1);
-		userHabitService.connectUserHabit(user, habit2, userHabit2);
-		userHabitService.connectUserHabit(user1, habit1, userHabit3);
-		userHabitService.connectUserHabit(user2, habit1, userHabit4);
+		userHabitService.connectUserHabit(uids.get(0), hids.get(0), userHabit);
+		userHabitService.connectUserHabit(uids.get(0), hids.get(1), userHabit1);
+		userHabitService.connectUserHabit(uids.get(0), hids.get(2), userHabit2);
+
+		User _user = userService.get(uids.get(0));
+
+		for (UserHabit _uH : _user.getUserHabits()) {
+			_uH.setModifyTime(new Date());
+			userHabitService.update(_uH);
+		}
+		userHabitService.connectUserHabit(uids.get(1), hids.get(1), userHabit3);
+		userHabitService.connectUserHabit(uids.get(2), hids.get(1), userHabit4);
+
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		userHabitService.cancelUserHabit(user, habit, userHabit);
-		userHabitService.cancelUserHabit(user, habit1, userHabit1);
-		userHabitService.cancelUserHabit(user, habit2, userHabit2);
-		userHabitService.cancelUserHabit(user1, habit1, userHabit3);
-		
-		userService.removeFriend(user, user1);
-		userService.removeFriend(user1, user2);
-		
-		
-		/*
-		 * userDao.delete(user1); userDao.delete(user);
-		 * habitService.delete(habit); habitService.delete(habit1);
-		 * habitService.delete(habit2);
-		 */
+
+		userService.removeFriend(uids.get(1), uids.get(0));
+		userService.removeFriend(uids.get(1), uids.get(2));
+
+		userHabitService.cancelUserHabit(uids.get(0), hids.get(0));
+		userHabitService.cancelUserHabit(uids.get(0), hids.get(1));
+		userHabitService.cancelUserHabit(uids.get(0), hids.get(2));
+		userHabitService.cancelUserHabit(uids.get(1), hids.get(1));
+		userHabitService.cancelUserHabit(uids.get(2), hids.get(1));
+//
+//		for (Long id : uids)
+//			userService.delete(id);
+//		for (Integer id : hids)
+//			habitService.delete(id);
 
 	}
 
@@ -122,18 +129,19 @@ public class HabitServiceImplTest {
 	/*
 	 * @Test public void testfindParticipateNum() { int num =
 	 * habitService.findParticipateNum(hids.get(0)); assertEquals(1,num); }
-	 
-	@Test
-	public void testfindParticipateNum_2() {
-		int num = habitService.findParticipateNum(hids.get(1));
-		assertEquals(2, num);
-	}
-*/
+	 * 
+	 * @Test public void testfindParticipateNum_2() { int num =
+	 * habitService.findParticipateNum(hids.get(1)); assertEquals(2, num); }
+	 */
+	
 	@Test
 	public void testfindParticipateAndFriends() {
-		List<User> users = habitService.findParticipateAndFriends(hids.get(1), uids.get(1) );
-		assertEquals(2,users.size());
-		for(User user:users)
-			System.out.println("USERNAME "+user.getUserName());
+		List<User> users = habitService.findParticipateAndFriends(hids.get(1),
+				uids.get(1));
+		assertEquals(2, users.size());
+		for (User user : users)
+			System.out.println("USERNAME " + user.getUserName());
 	}
+
+	
 }
