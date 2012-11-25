@@ -1,5 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,6 +61,27 @@ public class User {
 	private Set<UserHabit> userHabits = new HashSet<UserHabit>();
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Flag> flags = new HashSet<Flag>();
+
+	private static Comparator<User> friendsMostComparator = new Comparator<User>() {
+		@Override
+		public int compare(User user1, User user2) {
+			return user2.getFriends().size() - user1.getFriends().size();
+		}
+	};
+	private static Comparator<User> checkInMostComparator = new Comparator<User>() {
+		@Override
+		public int compare(User user1, User user2) {
+			return user2.getCheckIns().size() - user1.getCheckIns().size();
+		}
+	};
+	
+	public static Comparator<User> getCheckInMostComparator() {
+		return checkInMostComparator;
+	}
+
+	public static Comparator<User> getFriendsMostComparator() {
+		return friendsMostComparator;
+	}
 
 	public Set<Flag> getFlags() {
 		return flags;

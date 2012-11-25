@@ -1,6 +1,7 @@
 package com.ebupt.justholdon.server.database.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -104,12 +105,51 @@ public class UserServiceImpl implements UserService {
 			return false;
 		return user.getPassword().equals(password);
 	}
-
-	@Override
-	public List<User> findFriends(Long uid, Integer start, Integer end) {
+	public List<User> findFriends(Long uid) {
 		User user = userDao.get(uid);
 		List<User> friends = new ArrayList<User>(user.getFriends());
-		return Utils.subList(start, end, friends);
+		return friends;
 	}
+	@Override
+	public List<User> findFriends(Long uid, Integer start, Integer end) {
+		return Utils.subList(start, end, findFriends(uid));
+	}
+
+	@Override
+	public List<User> findUsers(ComparatorType type) {
+		List<User> users = userDao.findAll();
+		if(null == users) return null;
+		if(type.equals(ComparatorType.MOSTFRIENDS))
+			Collections.sort(users,User.getFriendsMostComparator());
+		else if(type.equals(ComparatorType.ACTIVEST))
+			Collections.sort(users,User.getCheckInMostComparator());
+		return users;
+	}
+
+	@Override
+	public List<User> findUsers(ComparatorType type, Integer start, Integer end) {
+		List<User> users = findUsers(type);
+		if(null == users) return null;
+		return Utils.subList(start, end, users);
+	}
+
+	@Override
+	public List<User> searchFriend(Long uid, String key) {
+		List<User> friends = findFriends(uid);
+		List<User> result = new ArrayList<User>();
+		for(User friend:friends)
+		{
+			if(friend.getUserName().contains(key))
+				result.add(friend);
+		}
+		return result;
+	}
+
+	@Override
+	public List<User> searchFriend(Long uid, String key, Integer start,
+			Integer end) {
+		return Utils.subList(start, end, searchFriend(uid,key));
+	}
+	
 
 }
