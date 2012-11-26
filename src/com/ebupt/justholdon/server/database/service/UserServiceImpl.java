@@ -43,8 +43,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public int update(Long id, Map<String, Object> infos) {
-		// TODO Auto-generated method stub
-		return -1;
+		return userDao.update(id, infos);
 	}
 
 	// @Override

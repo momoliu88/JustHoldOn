@@ -25,7 +25,7 @@ public class CheckIn {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(name = "checkinTime")
-	private Date checkInTime;
+	private Date checkInTime = new Date();
 	@ManyToOne
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;

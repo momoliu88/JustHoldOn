@@ -25,7 +25,7 @@ public class Impression {
 	@ManyToOne
 	@JoinColumn(name = "userBId", nullable = false)
 	private User receiver;
-	private Date createTime;
+	private Date createTime = new Date();;
 	private String content;
 
 	public int getId() {
