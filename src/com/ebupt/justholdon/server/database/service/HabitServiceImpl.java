@@ -126,7 +126,7 @@ public class HabitServiceImpl implements HabitService {
 		Set<UserHabit> userHabits = habit.getUserHabits();
 		Set<User> participaters = new HashSet<User>();
 		for (UserHabit userHabit : userHabits) {
-			if (userHabit.isDeleted())
+			if (userHabit.getStat() == HabitState.DELETED)
 				continue;
 			participaters.add(userHabit.getUser());
 		}

@@ -44,6 +44,28 @@ public class User {
 	private Date createTime;
 	private String deviceToken;
 	private String token;
+	
+	@OneToMany(mappedBy="user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<SystemInfoSended> receiveSystemInfos = new HashSet<SystemInfoSended>();
+	
+	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Event> sponsorEvent = new HashSet<Event>();
+	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Event> receiverEvent = new HashSet<Event>();
+	
+	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Comment> sponsorComments = new HashSet<Comment>();
+	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Comment> receiverComments = new HashSet<Comment>();
+	
+	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Event> sponsorMessages = new HashSet<Event>();
+	
+	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Event> receiveMessages = new HashSet<Event>();
+	
+	@OneToMany(mappedBy="user",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Set<WeeklySummary> weeklySummaries = new HashSet<WeeklySummary>();
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Approve> approves = new HashSet<Approve>();
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -51,7 +73,6 @@ public class User {
 
 	@OneToMany(mappedBy = "sponsor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Impression> sponseImpressiones = new HashSet<Impression>();
-
 	@OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Impression> receivedImpressiones = new HashSet<Impression>();
 
@@ -75,6 +96,14 @@ public class User {
 		}
 	};
 	
+	public Set<SystemInfoSended> getReceiveSystemInfos() {
+		return receiveSystemInfos;
+	}
+
+	public void setReceiveSystemInfos(Set<SystemInfoSended> receiveSystemInfos) {
+		this.receiveSystemInfos = receiveSystemInfos;
+	}
+
 	public static Comparator<User> getCheckInMostComparator() {
 		return checkInMostComparator;
 	}
@@ -221,6 +250,67 @@ public class User {
 				.setUserName(getUserName()).setPassword(getPassword())
 				.setWeiboKey(getToken()).setDeviceToken(getDeviceToken())
 				.setCreateTime(getCreateTime()).setSocialBind(getSocialBind());
+	}
+
+	public Set<WeeklySummary> getWeeklySummaries() {
+		return weeklySummaries;
+	}
+
+	public User setWeeklySummaries(Set<WeeklySummary> weeklySummaries) {
+		this.weeklySummaries = weeklySummaries;
+		return this;
+	}
+
+	public Set<Event> getSponsorMessages() {
+		return sponsorMessages;
+	}
+
+	public Set<Event> getSponsorEvent() {
+		return sponsorEvent;
+	}
+
+	public void setSponsorEvent(Set<Event> sponsorEvent) {
+		this.sponsorEvent = sponsorEvent;
+	}
+
+	public Set<Event> getReceiverEvent() {
+		return receiverEvent;
+	}
+
+	public void setReceiverEvent(Set<Event> receiverEvent) {
+		this.receiverEvent = receiverEvent;
+	}
+
+	public User setSponsorMessages(Set<Event> sponsorMessages) {
+		this.sponsorMessages = sponsorMessages;
+		return this;
+	}
+
+	public Set<Event> getReceiveMessages() {
+		return receiveMessages;
+	}
+
+	public User setReceiveMessages(Set<Event> receiveMessages) {
+		this.receiveMessages = receiveMessages;
+		return this;
+	}
+
+	public Set<Comment> getSponsorComments() {
+		return sponsorComments;
+	}
+
+	public User setSponsorComments(Set<Comment> sponsorComments) {
+		this.sponsorComments = sponsorComments;
+		return this;
+	}
+
+	public Set<Comment> getReceiverComments() {
+		return receiverComments;
+	}
+
+	public User setReceiverComments(Set<Comment> receiverComments) {
+		this.receiverComments = receiverComments;
+		return this;
 	}
 
 	public boolean equals(Object obj) {

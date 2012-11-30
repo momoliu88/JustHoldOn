@@ -60,7 +60,10 @@ public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public T get(PK id) {
-		return (T) currentSession().get(type, id);
+		T obj = (T) currentSession().get(type, id);
+		if(null == obj)
+			throw new java.lang.NullPointerException("can't get object from [id]"+id);
+		return obj;
 	}
 
 	@Override

@@ -103,6 +103,7 @@ public class FlagServiceImplTest {
 
 		flagService.addHabit(hids.get(1), flagIds.get(0));
 		flagService.addHabit(hids.get(2), flagIds.get(0));
+		
 	}
 
 	@After
@@ -139,6 +140,13 @@ public class FlagServiceImplTest {
 	public void testFindAllBoolean() {
 		List<Flag> flags = flagService.findAll(true);
 		assertEquals("flag2", flags.get(0).getContent());
+		
+//		User _user = userService.get(12L);
+//		Set<Flag> flags = _user.getFlags();
+//		for(Flag flag:flags)
+//		{
+//			System.out.println(flag);
+//		}
 	}
 /*
 	@Test

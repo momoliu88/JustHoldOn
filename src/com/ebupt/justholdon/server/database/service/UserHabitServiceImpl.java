@@ -75,7 +75,7 @@ public class UserHabitServiceImpl implements UserHabitService {
 			return false;
 		}
 
-		if (userHabit.isDeleted())
+		if (userHabit.getStat() == HabitState.DELETED)
 			return false;
 		userHabit.setUser(user).setHabit(habit);
 
@@ -98,10 +98,10 @@ public class UserHabitServiceImpl implements UserHabitService {
 			return false;
 		}
 
-		if (userHabit.isDeleted())
+		if (userHabit.getStat() == HabitState.DELETED)
 			return false;
-		userHabit.setDeleted(true);
-		userHabit.setDeleteTime(new Date());
+		userHabit.setStat(HabitState.DELETED);
+		userHabit.setEndTime(new Date());
 
 		user.getUserHabits().remove(userHabit);
 		habit.getUserHabits().remove(userHabit);

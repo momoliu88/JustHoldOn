@@ -33,6 +33,7 @@ public class UserServiceTest {
 		UserField user = new UserField().setId(101L).setUserName("name")
 				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
 				.setAvatar("ava");
+		
 		UserField user1 = new UserField().setId(102L).setUserName("name1")
 				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
 				.setAvatar("ava");
@@ -45,13 +46,14 @@ public class UserServiceTest {
 		UserField user4 = new UserField().setId(105L).setUserName("name4")
 				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
 				.setAvatar("ava");
+		/*
 		uids.add(service.createAndSave("username", "pass", 123L, "avatar", "device",
 				"token"));
 		uids.add(service.save(user));
 		uids.add(service.save(user1));
 		uids.add(service.save(user2));
 		uids.add(service.save(user3));
-		uids.add(service.save(user4));
+		uids.add(service.save(user4));*/
 
 	}
 
@@ -63,8 +65,9 @@ public class UserServiceTest {
 
 	@Test
 	public void testCreateAndSave() {	
+		 
 	}
-
+/*
 	@Test
 	public void testSave() {
 		
@@ -170,4 +173,5 @@ public class UserServiceTest {
 			System.out.println(user.getId());
 		removeFriends();
 	}
+	*/
 }

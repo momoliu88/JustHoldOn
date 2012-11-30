@@ -149,6 +149,24 @@ public class UserServiceImpl implements UserService {
 			Integer end) {
 		return Utils.subList(start, end, searchFriend(uid,key));
 	}
-	
+	/*for test*/
+//	public static void main(String args[])
+//	{
+//		ApplicationContext ctx = new FileSystemXmlApplicationContext("bean.xml");
+//		UserFieldService service = (UserFieldService) ctx.getBean("userFieldService");
+//
+//		UserField user = new UserField().setId(101L).setUserName("name")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
+//		UserField userexp = new UserField().setId(101L).setUserName("name")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
+//		try{
+//		service.save(userexp);
+//		service.save(user);}catch(Exception e)
+//		{
+//			System.out.println("in main");
+//		}
+//	}
 
 }

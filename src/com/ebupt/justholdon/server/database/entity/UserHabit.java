@@ -1,8 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
 import java.util.Date;
-
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.ebupt.justholdon.server.database.service.HabitState;
 
 @Entity
 @Table(name = "userHabits")
@@ -29,10 +29,9 @@ public class UserHabit {
 	private AlarmType needAlarm;
 	private Date alarmTime;
 	private Date createTime;
-	private Date deleteTime;
+	private Date endTime;
 	private String currentStage = "INIT";
-	@Column(name = "stat")
-	private boolean deleted = false;
+	private HabitState stat = HabitState.ING;
 	private Date modifyTime;
 
 	public int getId() {
@@ -92,12 +91,23 @@ public class UserHabit {
 		return this;
 	}
 
-	public Date getDeleteTime() {
-		return deleteTime;
+
+	public Date getEndTime() {
+		return endTime;
 	}
 
-	public UserHabit setDeleteTime(Date deleteTime) {
-		this.deleteTime = deleteTime;return this;
+	public UserHabit setEndTime(Date endTime) {
+		this.endTime = endTime;
+		return this;
+	}
+
+	public HabitState getStat() {
+		return stat;
+	}
+
+	public UserHabit setStat(HabitState stat) {
+		this.stat = stat;
+		return this;
 	}
 
 	public String getCurrentStage() {
@@ -109,13 +119,6 @@ public class UserHabit {
 		return this;
 	}
 
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public UserHabit setDeleted(boolean deleted) {
-		this.deleted = deleted;return this;
-	}
 
 	public Date getModifyTime() {
 		return modifyTime;

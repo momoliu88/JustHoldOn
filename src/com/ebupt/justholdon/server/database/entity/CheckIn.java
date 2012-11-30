@@ -1,6 +1,7 @@
 package com.ebupt.justholdon.server.database.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -38,10 +39,21 @@ public class CheckIn {
 	private String location;
 
 	@OneToMany(mappedBy = "checkin", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<Approve> approves;
+	private Set<Approve> approves = new HashSet<Approve>();
 
+	@OneToMany(mappedBy = "checkIn", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private Set<Comment> comments = new HashSet<Comment>();
 	public int getId() {
 		return id;
+	}
+
+	public Set<Comment> getComments() {
+		return comments;
+	}
+
+	public CheckIn setComments(Set<Comment> comments) {
+		this.comments = comments;
+		return this;
 	}
 
 	public CheckIn setId(int id) {
@@ -120,5 +132,4 @@ public class CheckIn {
 		this.approves = approves;
 		return this;
 	}
-
 }

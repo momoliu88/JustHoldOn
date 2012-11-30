@@ -60,31 +60,31 @@ public class CheckInServiceImpl implements CheckInService{
 	}
 
 	@Override
-	public boolean checkIn(Long uid, Integer hid) {
+	public Integer checkIn(Long uid, Integer hid) {
 		User user = userDao.get(uid);
 		Habit habit = habitDao.get(hid);
 		if(user == null || habit == null) 
-			return false;
+			return -1;
 		CheckIn checkIn = new CheckIn().setUser(user).setHabit(habit);
 		user.getCheckIns().add(checkIn);
 		habit.getCheckIns().add(checkIn);
- 		checkInDao.save(checkIn);
+ 		Integer id = checkInDao.save(checkIn);
  		userDao.update(user);
  		habitDao.update(habit);
- 		return true;
+ 		return id;
 	}
 
 	@Override
-	public boolean checkIn(CheckIn checkIn) {
+	public Integer checkIn(CheckIn checkIn) {
 		User user = checkIn.getUser();
 		Habit habit = checkIn.getHabit();
-		if(user == null || habit == null) return false;
+		if(user == null || habit == null) return -1;
 		user.getCheckIns().add(checkIn);
 		habit.getCheckIns().add(checkIn);
- 		checkInDao.saveOrUpdate(checkIn);
+ 		Integer id = checkInDao.save(checkIn);
  		userDao.update(user);
  		habitDao.update(habit);
- 		return true;
+ 		return id;
 	}
 
 	@Override

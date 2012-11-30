@@ -34,6 +34,9 @@ public class Habit {
 	private int times;
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CheckIn> checkIns = new HashSet<CheckIn>();
+	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Set<Event> events = new HashSet<Event>();
+	
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<UserHabit> userHabits = new HashSet<UserHabit>();
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -151,4 +154,14 @@ public class Habit {
 	{
 		return new StringBuilder().append(id).append(habitName).toString();
 	}
+
+	public Set<Event> getEvents() {
+		return events;
+	}
+
+	public Habit setEvents(Set<Event> events) {
+		this.events = events;
+		return this;
+	}
+	
 }
