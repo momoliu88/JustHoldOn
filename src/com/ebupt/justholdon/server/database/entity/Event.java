@@ -1,5 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -35,6 +36,17 @@ public class Event {
 	private String content;
 	private MessageFlag flag = MessageFlag.JUST_EVENT;
 	private Date createTime = new Date();
+	private Boolean isSystemInfo = false;
+	
+	private static Comparator<Event> dateComparator = new Comparator<Event>()
+			{
+
+				@Override
+				public int compare(Event arg0, Event arg1) {
+					return (int) (arg1.getCreateTime().getTime()-arg0.getCreateTime().getTime());
+				}
+		
+			};
 	public int getId() {
 		return id;
 	}
@@ -106,6 +118,15 @@ public class Event {
 	public Event setCreateTime(Date createTime) {
 		this.createTime = createTime;
 		return this;
+	}
+	public Boolean getIsSystemInfo() {
+		return isSystemInfo;
+	}
+	public void setIsSystemInfo(Boolean isSystemInfo) {
+		this.isSystemInfo = isSystemInfo;
+	}
+	public static Comparator<Event> getDateComparator() {
+		return dateComparator;
 	}
 	
 	

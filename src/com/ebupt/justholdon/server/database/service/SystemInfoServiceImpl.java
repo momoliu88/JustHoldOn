@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ebupt.justholdon.server.database.dao.SystemInfoDao;
+import com.ebupt.justholdon.server.database.dao.SystemInfoSendedDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.SystemInfo;
 import com.ebupt.justholdon.server.database.entity.SystemInfoSended;
@@ -24,6 +25,8 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	private SystemInfoDao systemInfoDao;
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	private SystemInfoSendedDao systemInfoSendedDao;
 	@Override
 	public Integer save(SystemInfo newInstance) {
 		return systemInfoDao.save(newInstance);
@@ -84,7 +87,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		{
 			hasReceivedInfos.add(info.getSystemInfo());
 		}
-		allSystemInfos.retainAll(hasReceivedInfos);
+		allSystemInfos.removeAll(hasReceivedInfos);
 		Collections.sort(allSystemInfos,SystemInfo.getDateComparator());
 		return allSystemInfos;
 	}
@@ -99,9 +102,16 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	public List<SystemInfo> getAllSystemInfo(Long uid, Integer start,
 			Integer end) {
 		List<SystemInfo> allSystemInfos = systemInfoDao.findAll();
-		List<SystemInfo> subList = Utils.subList(start, end,allSystemInfos);
-		Collections.sort(subList,SystemInfo.getDateComparator());
-		return subList;
+		Collections.sort(allSystemInfos,SystemInfo.getDateComparator());
+		return Utils.subList(start, end,allSystemInfos);
+	}
+
+	@Override
+	public void readASystemInfo(Long uid, Integer id) {
+		User user = userDao.get(uid);
+		SystemInfo systemInfo = systemInfoDao.get(id);
+		SystemInfoSended systemInfoSended = new SystemInfoSended().setUser(user).setSystemInfo(systemInfo);
+		systemInfoSendedDao.saveOrUpdate(systemInfoSended);
 	}
 
 }

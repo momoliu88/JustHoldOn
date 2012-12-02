@@ -1,7 +1,10 @@
 package com.ebupt.justholdon.server.database.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +27,13 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private HabitDao habitDao;
 	@Autowired
-	private EventDao eventDao ;
+	private EventDao eventDao;
+
 	@Override
 	public Integer save(Event newInstance) {
 		return eventDao.save(newInstance);
 	}
+
 	@Override
 	public Event get(Integer id) {
 		return eventDao.get(id);
@@ -53,67 +58,93 @@ public class EventServiceImpl implements EventService {
 	public List<Event> findAll() {
 		return eventDao.findAll();
 	}
+
 	@Override
 	public Integer createGenericEvent(Long sponsorId, Long receiverId,
 			Integer habitId, EventType type, Integer relationId,
 			String content, MessageFlag flag) {
-		if(null == type || null == flag)
-			throw new java.lang.NullPointerException("event type or message flag can't be NULL!");
+		if (null == type || null == flag)
+			throw new java.lang.NullPointerException(
+					"event type or message flag can't be NULL!");
 		User sponsor = userDao.get(sponsorId);
 		User receiver = userDao.get(receiverId);
 		Habit habit = null;
-		if(null != habitId)
-			 habit = habitDao.get(habitId);
-		Event event = new Event()
-							.setContent(content)
-							.setFlag(flag)
-							.setSponsor(sponsor)
-							.setReceiver(receiver)
-							.setType(type)
-							.setRelationId(relationId);
-		if(habit != null)
+		if (null != habitId)
+			habit = habitDao.get(habitId);
+		Event event = new Event().setContent(content).setFlag(flag)
+				.setSponsor(sponsor).setReceiver(receiver).setType(type)
+				.setRelationId(relationId);
+		if (habit != null)
 			event.setHabit(habit);
 		return eventDao.save(event);
-		
+
 	}
+
 	@Override
 	public Integer createFriendInfo(Long sponsorId, Long receiverId,
 			EventType type, String content) {
-		if(null == type)
-			throw new java.lang.NullPointerException("event type or message flag can't be NULL!");
+		if (null == type)
+			throw new java.lang.NullPointerException(
+					"event type or message flag can't be NULL!");
 		User sponsor = userDao.get(sponsorId);
 		User receiver = userDao.get(receiverId);
-		Event event = new Event()
-						.setContent(content)
-						.setFlag(MessageFlag.UNREADED)
-						.setSponsor(sponsor)
-						.setReceiver(receiver)
-						.setType(type);
+		Event event = new Event().setContent(content)
+				.setFlag(MessageFlag.UNREADED).setSponsor(sponsor)
+				.setReceiver(receiver).setType(type);
 		return eventDao.save(event);
 	}
+
 	@Override
 	public Integer createHabitInfo(Long sponsorId, Long receiverId,
 			Integer habitId, EventType type, String content, Integer relatioId) {
-		if(null == type)
-			throw new java.lang.NullPointerException("event type or message flag can't be NULL!");
+		if (null == type)
+			throw new java.lang.NullPointerException(
+					"event type or message flag can't be NULL!");
 		User sponsor = userDao.get(sponsorId);
 		User receiver = userDao.get(receiverId);
 		Habit habit = habitDao.get(habitId);
 
-		Event event = new Event()
-						.setContent(content)
-						.setFlag(MessageFlag.UNREADED)
-						.setSponsor(sponsor)
-						.setReceiver(receiver)
-						.setType(type)
-						.setHabit(habit);
+		Event event = new Event().setContent(content)
+				.setFlag(MessageFlag.UNREADED).setSponsor(sponsor)
+				.setReceiver(receiver).setType(type).setHabit(habit);
 		return eventDao.save(event);
 	}
+
 	@Override
-	public Integer createHabitEvent(Long sponsortId, Integer habitId,
+	public Integer createHabitEvent(Long sponsorId, Integer habitId,
 			EventType type, String content) {
-		// TODO Auto-generated method stub
-		return null;
+		if (null == type)
+			throw new java.lang.NullPointerException(
+					"event type or message flag can't be NULL!");
+		User user = userDao.get(sponsorId);
+		Habit habit = habitDao.get(habitId);
+
+		Event event = new Event().setContent(content)
+				.setFlag(MessageFlag.JUST_EVENT).setSponsor(user).setType(type)
+				.setHabit(habit);
+
+		return eventDao.save(event);
+	}
+
+	@Override
+	public void readAInformation(Integer infoId) {
+		Event event = eventDao.get(infoId);
+		event.setFlag(MessageFlag.READED);
+		eventDao.update(event);
+	}
+
+	@Override
+	public List<Event> getUnreadInformation(Long uid) {
+		User user = userDao.get(uid);
+		Set<Event> events = user.getReceiveMessages();
+		List<Event> results = new ArrayList<Event>();	
+		for(Event event : events)
+		{
+			if(event.getFlag().equals(MessageFlag.UNREADED))
+				results.add(event);
+		}
+		Collections.sort(results,Event.getDateComparator());
+		return results;
 	}
 
 }

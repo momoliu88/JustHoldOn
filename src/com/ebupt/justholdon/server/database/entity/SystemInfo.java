@@ -26,7 +26,8 @@ public class SystemInfo {
 	private String content;
 	private String extra;
 	private Date createTime = new Date();
-
+	private Boolean isSystemInfo = true;
+	
 	@OneToMany(mappedBy="systemInfo",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<SystemInfoSended> sendedSystemInfos = new HashSet<SystemInfoSended>();
 	public Integer getId() {
@@ -59,6 +60,14 @@ public class SystemInfo {
 	public SystemInfo setExtra(String extra) {
 		this.extra = extra;
 		return this;
+	}
+
+	public Boolean getIsSystemInfo() {
+		return isSystemInfo;
+	}
+
+	public void setIsSystemInfo(Boolean isSystemInfo) {
+		this.isSystemInfo = isSystemInfo;
 	}
 
 	public Date getCreateTime() {
