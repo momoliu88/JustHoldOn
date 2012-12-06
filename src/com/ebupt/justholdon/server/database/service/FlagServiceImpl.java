@@ -84,7 +84,16 @@ public class FlagServiceImpl implements FlagService {
 	@Override
 	@Transactional(readOnly = false)
 	public void delete(Integer id) {
-		flagDao.delete(id);
+		Flag flag = flagDao.get(id);
+		Set<User> users = flag.getUsers();
+		Set<Habit> habits = flag.getHabits();
+		for(User user:users)
+			user.getFlags().remove(flag);
+		for(Habit habit:habits)
+			habit.getFlags().remove(flag);
+		flag.getUsers().clear();
+		flag.getHabits().clear();
+		flagDao.delete(flag);
 	}
 
 	/*

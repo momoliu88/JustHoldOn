@@ -9,7 +9,7 @@ public class ExceptionCatcher {
 	public void throwExp(Throwable exp) throws DBServiceException 
 	{
 		logger.warn("exp",exp);
-		throw new DBServiceException("DBService",exp);
+		//throw new DBServiceException("DBService",exp);
 	}
  
 }

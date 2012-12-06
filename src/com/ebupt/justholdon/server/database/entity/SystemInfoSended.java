@@ -33,6 +33,7 @@ public class SystemInfoSended {
 	}
 	public SystemInfoSended setSystemInfo(SystemInfo systemInfo) {
 		this.systemInfo = systemInfo;
+		if(null != systemInfo)
 		systemInfo.getSendedSystemInfos().add(this);
 		return this;
 	}
@@ -41,7 +42,8 @@ public class SystemInfoSended {
 	}
 	public SystemInfoSended setUser(User user) {
 		this.user = user;
-		user.getReceiveSystemInfos().add(this);
+		if(null != user)
+			user.getReceiveSystemInfos().add(this);
 		return this;
 	}
 	public Date getSendTime() {

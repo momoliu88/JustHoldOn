@@ -10,6 +10,7 @@ public interface UserService extends GenericService<User,Long>{
 	public boolean removeFriend(Long user1,Long user2);
 	
 	public boolean isValideUser(Long uid,String password);
+	public boolean isFriend(Long uidA,Long uidB);
 	//use uid to find this user's friends
 	public List<User> findFriends(Long uid,Integer start,Integer end);
 	//find all users in this app

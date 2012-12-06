@@ -43,6 +43,8 @@ public class Impression {
 
 	public Impression setSponsor(User sponsor) {
 		this.sponsor = sponsor;
+		if(sponsor != null)
+			sponsor.getSponseImpressiones().add(this);
 		return this;
 	}
 
@@ -52,6 +54,8 @@ public class Impression {
 
 	public Impression setReceiver(User receiver) {
 		this.receiver = receiver;
+		if(receiver != null)
+			receiver.getReceivedImpressiones().add(this);
 		return this;
 	}
 

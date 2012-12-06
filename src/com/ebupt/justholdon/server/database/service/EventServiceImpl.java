@@ -51,7 +51,20 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public void delete(Integer id) {
-		eventDao.delete(id);
+		Event event = eventDao.get(id);
+		User sponsor = event.getSponsor();
+		User receiver = event.getReceiver();
+		Habit habit = event.getHabit();
+		if(null != sponsor)
+			sponsor.getSponsorEvent().remove(event);
+		if(null != receiver)
+			receiver.getReceiverEvent().remove(event);
+		if(null != habit)
+			habit.getEvents().remove(event);
+		event.setSponsor(null);
+		event.setReceiver(null);
+		event.setHabit(null);
+		eventDao.delete(event);
 	}
 
 	@Override
@@ -66,8 +79,12 @@ public class EventServiceImpl implements EventService {
 		if (null == type || null == flag)
 			throw new java.lang.NullPointerException(
 					"event type or message flag can't be NULL!");
-		User sponsor = userDao.get(sponsorId);
-		User receiver = userDao.get(receiverId);
+		User sponsor = null;
+		User receiver = null;
+		if(null != sponsorId)
+			sponsor = userDao.get(sponsorId);
+		if(null != receiverId)
+			receiver = userDao.get(receiverId);
 		Habit habit = null;
 		if (null != habitId)
 			habit = habitDao.get(habitId);
@@ -86,8 +103,12 @@ public class EventServiceImpl implements EventService {
 		if (null == type)
 			throw new java.lang.NullPointerException(
 					"event type or message flag can't be NULL!");
-		User sponsor = userDao.get(sponsorId);
-		User receiver = userDao.get(receiverId);
+		User sponsor = null;
+		User receiver = null;
+		if(null != sponsorId)
+			sponsor = userDao.get(sponsorId);
+		if(null != receiverId)
+			receiver = userDao.get(receiverId);
 		Event event = new Event().setContent(content)
 				.setFlag(MessageFlag.UNREADED).setSponsor(sponsor)
 				.setReceiver(receiver).setType(type);
@@ -100,8 +121,12 @@ public class EventServiceImpl implements EventService {
 		if (null == type)
 			throw new java.lang.NullPointerException(
 					"event type or message flag can't be NULL!");
-		User sponsor = userDao.get(sponsorId);
-		User receiver = userDao.get(receiverId);
+		User sponsor = null;
+		User receiver = null;
+		if(null != sponsorId)
+			sponsor = userDao.get(sponsorId);
+		if(null != receiverId)
+			receiver = userDao.get(receiverId);
 		Habit habit = habitDao.get(habitId);
 
 		Event event = new Event().setContent(content)
@@ -136,7 +161,7 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public List<Event> getUnreadInformation(Long uid) {
 		User user = userDao.get(uid);
-		Set<Event> events = user.getReceiveMessages();
+		Set<Event> events = user.getReceiverEvent();
 		List<Event> results = new ArrayList<Event>();	
 		for(Event event : events)
 		{
@@ -145,6 +170,33 @@ public class EventServiceImpl implements EventService {
 		}
 		Collections.sort(results,Event.getDateComparator());
 		return results;
+	}
+
+	@Override
+	public List<Event> getRelevantEvent(Long uid) {
+		User user = userDao.get(uid);
+		Set<Event> sponsortEvents = user.getSponsorEvent();
+		Set<Event> receiverEvents = user.getReceiverEvent();
+		List<Event> ret = new ArrayList<Event>();
+
+		for(Event event:sponsortEvents)
+			if(event.getFlag().equals(MessageFlag.JUST_EVENT))
+				ret.add(event);
+		for(Event event:receiverEvents)
+			if(event.getFlag().equals(MessageFlag.JUST_EVENT))
+				ret.add(event);
+		Collections.sort(ret,Event.getDateComparator());
+		return ret;
+	}
+
+	@Override
+	public List<Event> getRelevantEvent(Long uid, Integer start, Integer end) {
+		return Utils.subList(start, end, getRelevantEvent(uid));
+	}
+
+	@Override
+	public void deleteEvent(Integer eventid) {
+		delete(eventid);
 	}
 
 }

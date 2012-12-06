@@ -38,7 +38,12 @@ public class SystemInfoSendedServiceImpl implements SystemInfoSendedService {
 
 	@Override
 	public void delete(Integer id) {
-		systemInfoSendedDao.delete(id);
+		SystemInfoSended info = systemInfoSendedDao.get(id);
+		info.getSystemInfo().getSendedSystemInfos().remove(info);
+		info.getUser().getReceiveSystemInfos().remove(info);
+		info.setSystemInfo(null);
+		info.setUser(null);
+		systemInfoSendedDao.delete(info);
 	}
 
 	@Override

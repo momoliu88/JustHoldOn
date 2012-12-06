@@ -58,7 +58,8 @@ public class Event {
 	}
 	public Event setSponsor(User sponsor) {
 		this.sponsor = sponsor;
-		sponsor.getSponsorEvent().add(this);
+		if(null != sponsor)
+			sponsor.getSponsorEvent().add(this);
 		return this;
 	}
 	public User getReceiver() {
@@ -66,7 +67,8 @@ public class Event {
 	}
 	public Event setReceiver(User receiver) {
 		this.receiver = receiver;
-		receiver.getReceiverEvent().add(this);
+		if(null != receiver)
+			receiver.getReceiverEvent().add(this);
 		return this;
 	}
 	public Habit getHabit() {
@@ -74,7 +76,8 @@ public class Event {
 	}
 	public Event setHabit(Habit habit) {
 		this.habit = habit;
-		habit.getEvents().add(this);
+		if(null != habit)
+			habit.getEvents().add(this);
 		return this;
 	}
 //	public String getHabitName() {
@@ -94,7 +97,7 @@ public class Event {
 	public int getRelationId() {
 		return relationId;
 	}
-	public Event setRelationId(int relationId) {
+	public Event setRelationId(Integer relationId) {
 		this.relationId = relationId;
 		return this;
 	}
@@ -128,7 +131,5 @@ public class Event {
 	public static Comparator<Event> getDateComparator() {
 		return dateComparator;
 	}
-	
-	
 	
 }

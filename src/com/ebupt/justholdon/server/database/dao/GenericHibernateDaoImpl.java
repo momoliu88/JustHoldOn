@@ -54,6 +54,8 @@ public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
 	@SuppressWarnings("unchecked")
 	@Override
 	public PK save(T newInstance) {
+		if(null == newInstance)
+			throw new java.lang.NullPointerException("can't save NULL obj!");
 		return (PK) currentSession().save(newInstance);
 	}
 

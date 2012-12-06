@@ -18,7 +18,7 @@ import com.ebupt.justholdon.server.database.entity.SystemInfo;
 import com.ebupt.justholdon.server.database.entity.SystemInfoSended;
 import com.ebupt.justholdon.server.database.entity.User;
 
-@Service("systemInfoSendedService")
+@Service("systemInfoService")
 @Transactional
 public class SystemInfoServiceImpl implements SystemInfoService {
 	@Autowired
@@ -49,7 +49,8 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 
 	@Override
 	public void delete(Integer id) {
-		systemInfoDao.delete(id);
+//		SystemInfo info = systemInfoDao.get(id);
+//		info.getSendedSystemInfos();
 	}
 
 	@Override
@@ -99,7 +100,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	}
 
 	@Override
-	public List<SystemInfo> getAllSystemInfo(Long uid, Integer start,
+	public List<SystemInfo> getAllSystemInfo(Integer start,
 			Integer end) {
 		List<SystemInfo> allSystemInfos = systemInfoDao.findAll();
 		Collections.sort(allSystemInfos,SystemInfo.getDateComparator());

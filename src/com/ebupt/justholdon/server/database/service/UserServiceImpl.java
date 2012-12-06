@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void delete(Long id) {
-		userDao.delete(id);
+		//userDao.delete(id);
 	}
 
 	@Override
@@ -168,5 +168,11 @@ public class UserServiceImpl implements UserService {
 //			System.out.println("in main");
 //		}
 //	}
+	@Override
+	public boolean isFriend(Long uidA, Long uidB) {
+		User userA = userDao.get(uidA);
+		User userB = userDao.get(uidB);
+		return userA.getFriends().contains(userB);
+	}
 
 }

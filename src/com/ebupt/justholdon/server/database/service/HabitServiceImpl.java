@@ -16,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
+//import com.ebupt.justholdon.server.database.entity.CheckIn;
+//import com.ebupt.justholdon.server.database.entity.Event;
+//import com.ebupt.justholdon.server.database.entity.Flag;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserHabit;
@@ -62,7 +65,24 @@ public class HabitServiceImpl implements HabitService {
 
 	@Override
 	public void delete(Integer id) {
-		habitDao.delete(id);
+//		Habit habit = habitDao.get(id);
+//		Set<UserHabit> userHabits = habit.getUserHabits();
+//		Set<Flag> flags = habit.getFlags();
+//		Set<CheckIn> checkIns = habit.getCheckIns();
+//		Set<Event> events = habit.getEvents();
+//		for(UserHabit userHabit:userHabits)
+//			userHabit.setHabit(null);
+//		for(Flag flag:flags)
+//			flag.getHabits().remove(habit);
+//		for(CheckIn checkIn:checkIns)
+//			checkIn.setHabit(null);
+//		for(Event event:events)
+//			event.setHabit(null);
+//		habit.getFlags().clear();
+//		habit.getCheckIns().clear();
+//		habit.getEvents().clear();
+//		habit.getUserHabits().clear();
+//		habitDao.delete(habit);
 	}
 
 	@Override

@@ -46,7 +46,10 @@ public class WeeklySummaryServiceImpl implements WeeklySummaryService {
 
 	@Override
 	public void delete(Integer id) {
-		weeklySummaryDao.delete(id);
+		WeeklySummary weeklySummary = weeklySummaryDao.get(id);
+		weeklySummary.getUser().getWeeklySummaries().remove(weeklySummary);
+		weeklySummary.setUser(null);
+		weeklySummaryDao.delete(weeklySummary);
 	}
 
 	@Override
@@ -90,6 +93,15 @@ public class WeeklySummaryServiceImpl implements WeeklySummaryService {
 	public List<WeeklySummary> getUserWeeklySummary(Long uid, Integer start,
 			Integer end) {
 		return Utils.subList(start, end, getUserWeeklySummary(uid));
+	}
+
+	@Override
+	public void deleteWeeklySummary(Long uid, Integer wid) {
+		WeeklySummary summary = weeklySummaryDao.get(wid);
+		User user = userDao.get(uid);
+		user.getWeeklySummaries().remove(summary);
+		summary.setUser(null);
+		weeklySummaryDao.delete(wid);
 	}
 
 }

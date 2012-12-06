@@ -22,7 +22,7 @@ public class Comment {
 	private User sponsor;
 	@ManyToOne
 	@JoinColumn(name = "receiver")
-	private User receiver;
+	private User receiver = null;
 	@ManyToOne
 	@JoinColumn(name = "checkInId")
 	private CheckIn checkIn;
@@ -53,7 +53,8 @@ public class Comment {
 	}
 	public Comment setSponsor(User sponsor) {
 		this.sponsor = sponsor;
-		sponsor.getSponsorComments().add(this);
+		if(null != sponsor)
+			sponsor.getSponsorComments().add(this);
 		return this;
 	}
 	public User getReceiver() {
@@ -61,7 +62,8 @@ public class Comment {
 	}
 	public Comment setReceiver(User receiver) {
 		this.receiver = receiver;
-		receiver.getReceiverComments().add(this);
+		if(null != receiver)
+			receiver.getReceiverComments().add(this);
 		return this;
 	}
 	public CheckIn getCheckIn() {
@@ -70,7 +72,8 @@ public class Comment {
 	//add comments
 	public Comment setCheckIn(CheckIn checkIn) {
 		this.checkIn = checkIn;
-		checkIn.getComments().add(this);
+		if(null != checkIn)
+			checkIn.getComments().add(this);
 		return this;
 	}
 	public Date getCreateTime() {

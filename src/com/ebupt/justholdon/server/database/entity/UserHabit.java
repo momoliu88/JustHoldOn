@@ -1,5 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
+import java.util.Comparator;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,12 +29,20 @@ public class UserHabit {
 	private User user;
 	private AlarmType needAlarm;
 	private Date alarmTime;
-	private Date createTime;
+	private Date createTime = new Date();
 	private Date endTime;
 	private String currentStage = "INIT";
 	private HabitState stat = HabitState.ING;
 	private Date modifyTime;
-
+	private PrivilegeType privilege = PrivilegeType.ALL;
+	
+	
+	private static Comparator<UserHabit> dateComparator = new Comparator<UserHabit>() {
+		@Override
+		public int compare(UserHabit arg1, UserHabit arg2) {
+			return (int) (arg2.getCreateTime().getTime() - arg1.getCreateTime().getTime());
+		}
+	};
 	public int getId() {
 		return id;
 	}
@@ -127,5 +136,19 @@ public class UserHabit {
 	public UserHabit setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;return this;
 	}
+
+	public PrivilegeType getPrivilege() {
+		return privilege;
+	}
+
+	public UserHabit setPrivilege(PrivilegeType privilege) {
+		this.privilege = privilege;
+		return this;
+	}
+
+	public static Comparator<UserHabit> getDateComparator() {
+		return dateComparator;
+	}
+	
 	 
 }

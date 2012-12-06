@@ -41,7 +41,8 @@ public class WeeklySummary {
 	}
 	public WeeklySummary setUser(User user) {
 		this.user = user;
-		user.getWeeklySummaries().add(this);
+		if(null != user)
+			user.getWeeklySummaries().add(this);
 		return this;
 	}
 	public int getGoalCheckInTimes() {

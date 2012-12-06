@@ -49,8 +49,16 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public void delete(Integer id) {
-		commentDao.delete(id);
-	}
+		Comment comment = commentDao.get(id);
+		comment.getSponsor().getSponsorComments().remove(comment);
+		User receiver = comment.getReceiver();
+		comment.getCheckIn().getComments().remove(comment);
+		if(null != receiver)
+			receiver.getReceiverComments().remove(comment);
+		comment.setSponsor(null);
+		comment.setReceiver(null);
+		comment.setCheckIn(null);
+		commentDao.delete(comment);	}
 
 	@Override
 	public List<Comment> findAll() {
@@ -67,7 +75,9 @@ public class CommentServiceImpl implements CommentService {
 	public Integer createComment(Long sponsor, Long receiver,
 			Integer checkInId, Date date, String comment) {
 		User sponsorUser = userDao.get(sponsor);
-		User receiverUser = userDao.get(receiver);
+		User receiverUser = null;
+		if(null != receiver)
+			receiverUser = userDao.get(receiver);
 		CheckIn checkIn = checkInDao.get(checkInId);
 	
 		Comment commentObj = new Comment().setCheckIn(checkIn)
@@ -90,6 +100,11 @@ public class CommentServiceImpl implements CommentService {
 	public List<Comment> getCommentsForCheckin(Integer checkInId,
 			Integer start, Integer end) {
 		return Utils.subList(start, end, getCommentsForCheckin(checkInId));
+	}
+
+	@Override
+	public void deleteComment(Integer commentId) {
+		delete(commentId);
 	}
 
 }

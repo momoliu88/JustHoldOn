@@ -1,5 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,6 +44,16 @@ public class CheckIn {
 
 	@OneToMany(mappedBy = "checkIn", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Comment> comments = new HashSet<Comment>();
+	
+	private static Comparator<CheckIn> dateComparator = new Comparator<CheckIn>()
+			{
+				@Override
+				public int compare(CheckIn arg0, CheckIn arg1) {
+					return (int) (arg1.getCheckInTime().getTime() - arg0.getCheckInTime().getTime());
+				}
+		
+			};
+	
 	public int getId() {
 		return id;
 	}
@@ -76,6 +87,8 @@ public class CheckIn {
 
 	public CheckIn setUser(User user) {
 		this.user = user;
+		if(null != user)
+			user.getCheckIns().add(this);
 		return this;
 	}
 
@@ -85,6 +98,8 @@ public class CheckIn {
 
 	public CheckIn setHabit(Habit habit) {
 		this.habit = habit;
+		if(null != habit)
+			habit.getCheckIns().add(this);
 		return this;
 	}
 
@@ -132,4 +147,9 @@ public class CheckIn {
 		this.approves = approves;
 		return this;
 	}
+
+	public static Comparator<CheckIn> getDateComparator() {
+		return dateComparator;
+	}
+	
 }

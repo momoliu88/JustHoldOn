@@ -34,7 +34,7 @@ public class Habit {
 	private int times;
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CheckIn> checkIns = new HashSet<CheckIn>();
-	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Event> events = new HashSet<Event>();
 	
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

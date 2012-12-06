@@ -45,7 +45,12 @@ public class ImpressionServiceImpl implements ImpressionService {
 
 	@Override
 	public void delete(Integer id) {
-		impressionDao.delete(id);
+		Impression impression = impressionDao.get(id);
+		impression.getReceiver().getReceivedImpressiones().remove(impression);
+		impression.getSponsor().getSponseImpressiones().remove(impression);
+		impression.setReceiver(null);
+		impression.setSponsor(null);
+		impressionDao.delete(impression);
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class UserFieldServiceImpl implements UserFieldService {
 //	public void delete(UserField persistentObject) {
 //		userFieldDao.delete(persistentObject);
 //	}
-
+//
 	@Override
 	public void delete(Long id) {
 		userFieldDao.delete(id);

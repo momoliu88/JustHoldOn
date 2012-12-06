@@ -59,8 +59,8 @@ public class UserServiceTest {
 
 	@After
 	public void tearDown() throws Exception {
-		for(Long id:uids)
-			service.delete(id);
+//		for(Long id:uids)
+//			service.delete(id);
 	}
 
 	@Test

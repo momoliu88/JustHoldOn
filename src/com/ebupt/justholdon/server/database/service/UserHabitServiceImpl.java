@@ -1,5 +1,7 @@
 package com.ebupt.justholdon.server.database.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.dao.UserHabitDao;
 import com.ebupt.justholdon.server.database.entity.Habit;
+import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserHabit;
 
@@ -24,6 +27,8 @@ public class UserHabitServiceImpl implements UserHabitService {
 	private UserHabitDao userHabitDao;
 	@Autowired
 	private UserDao userDao;
+	@Autowired 
+	private UserService userService;
 	@Autowired
 	private HabitDao habitDao;
 
@@ -61,7 +66,12 @@ public class UserHabitServiceImpl implements UserHabitService {
 	 */
 	@Override
 	public void delete(Integer id) {
-		userHabitDao.delete(id);
+		UserHabit userHabit = userHabitDao.get(id);
+		userHabit.getUser().getUserHabits().remove(userHabit);
+		userHabit.getHabit().getUserHabits().remove(userHabit);
+		userHabit.setUser(null);
+		userHabit.setHabit(null);
+		userHabitDao.delete(userHabit);
 	}
 
 	@Override
@@ -80,8 +90,8 @@ public class UserHabitServiceImpl implements UserHabitService {
 		userHabit.setUser(user).setHabit(habit);
 
 		userHabitDao.saveOrUpdate(userHabit);
-		userDao.update(user);
-		habitDao.update(habit);
+//		userDao.update(user);
+//		habitDao.update(habit);
 		return true;
 	}
 
@@ -115,7 +125,7 @@ public class UserHabitServiceImpl implements UserHabitService {
 
 	@Override
 	public boolean cancelUserHabit(Long uid, Integer hid) {
-		UserHabit userHabit = findUserHabit(uid,hid);
+		UserHabit userHabit = getUserHabit(uid,hid);
 		if(null == userHabit) return false;
 		return cancelUserHabit(userDao.get(uid), habitDao.get(hid), userHabit);
 	}
@@ -126,10 +136,8 @@ public class UserHabitServiceImpl implements UserHabitService {
 //	}
 
 	@Override
-	public UserHabit findUserHabit(Long uid, Integer hid) {
+	public UserHabit getUserHabit(Long uid, Integer hid) {
 		User user = userDao.get(uid);
-		Habit habit = habitDao.get(hid);
-		if(user == null || habit == null) return null;
 		Set<UserHabit> uHabits = user.getUserHabits();
 		UserHabit userHabit = null;
 		for (UserHabit uHabit : uHabits) {
@@ -139,6 +147,43 @@ public class UserHabitServiceImpl implements UserHabitService {
 			}
 		}
 		return userHabit;
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid) {
+		User user = userDao.get(uid);
+		Set<UserHabit> userHabits = user.getUserHabits();
+		List<UserHabit> ret = new ArrayList<UserHabit>(userHabits);
+		Collections.sort(ret,UserHabit.getDateComparator());
+		return ret;
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, Integer startpos,
+			Integer endpos) {
+		return Utils.subList(startpos, endpos, getUserHabits(uid));
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, Long beWatched) {
+		boolean isFriend = userService.isFriend(uid, beWatched);
+		PrivilegeType privilege = PrivilegeType.ALL;
+		if(isFriend)
+			privilege = PrivilegeType.ONLY_FRIENDS;
+		List<UserHabit> hostHabits = getUserHabits(beWatched);
+		List<UserHabit> ret = new ArrayList<UserHabit>();
+		for(UserHabit hostHabit:hostHabits)
+		{
+			 if(hostHabit.getPrivilege().compareTo(privilege) <= 0)
+				 ret.add(hostHabit);
+		}
+		return ret;
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, Long beWatched,
+			Integer startpos, Integer endpos) {
+		return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched));
 	}
 
 }

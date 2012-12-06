@@ -13,5 +13,8 @@ public interface WeeklySummaryService extends GenericService<WeeklySummary, Inte
 	/*get a user's weeklysummaries,sorted by date*/
 	public List<WeeklySummary> getUserWeeklySummary(Long uid);
 	public List<WeeklySummary> getUserWeeklySummary(Long uid,Integer start,Integer end);
+	
+	/*remove*/
+	public void deleteWeeklySummary(Long uid,Integer wid);
 
 }

@@ -1,6 +1,7 @@
 package com.ebupt.justholdon.server.database.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,12 @@ public class CheckInServiceImpl implements CheckInService{
 
 	@Override
 	public void delete(Integer id) {
-		checkInDao.delete(id);
+		CheckIn checkIn = checkInDao.get(id);
+		checkIn.getUser().getCheckIns().remove(checkIn);
+		checkIn.getHabit().getCheckIns().remove(checkIn);
+		checkIn.setUser(null);
+		checkIn.setHabit(null);
+		checkInDao.delete(checkIn);
 	}
 
 	@Override
@@ -63,27 +69,27 @@ public class CheckInServiceImpl implements CheckInService{
 	public Integer checkIn(Long uid, Integer hid) {
 		User user = userDao.get(uid);
 		Habit habit = habitDao.get(hid);
-		if(user == null || habit == null) 
-			return -1;
+//		if(user == null || habit == null) 
+//			return -1;
 		CheckIn checkIn = new CheckIn().setUser(user).setHabit(habit);
-		user.getCheckIns().add(checkIn);
-		habit.getCheckIns().add(checkIn);
+//		user.getCheckIns().add(checkIn);
+//		habit.getCheckIns().add(checkIn);
  		Integer id = checkInDao.save(checkIn);
- 		userDao.update(user);
- 		habitDao.update(habit);
+// 		userDao.update(user);
+// 		habitDao.update(habit);
  		return id;
 	}
 
 	@Override
 	public Integer checkIn(CheckIn checkIn) {
-		User user = checkIn.getUser();
-		Habit habit = checkIn.getHabit();
-		if(user == null || habit == null) return -1;
-		user.getCheckIns().add(checkIn);
-		habit.getCheckIns().add(checkIn);
+//		User user = checkIn.getUser();
+//		Habit habit = checkIn.getHabit();
+//		if(user == null || habit == null) return -1;
+//		user.getCheckIns().add(checkIn);
+//		habit.getCheckIns().add(checkIn);
  		Integer id = checkInDao.save(checkIn);
- 		userDao.update(user);
- 		habitDao.update(habit);
+// 		userDao.update(user);
+// 		habitDao.update(habit);
  		return id;
 	}
 
@@ -95,6 +101,7 @@ public class CheckInServiceImpl implements CheckInService{
 		for(CheckIn checkIn: checkIns)
 			if(checkIn.getHabit().getId() == hid)
 				results.add(checkIn);
+		Collections.sort(results,CheckIn.getDateComparator());
 		return results;
 	}
 
@@ -111,16 +118,50 @@ public class CheckInServiceImpl implements CheckInService{
 	}
 
 	@Override
-	public int getCheckInNum(Long uid, Integer hid, Date start, Date end) {
-		List<CheckIn> checkIns = getCheckIns(uid,hid);
-		List<CheckIn> inRange = new ArrayList<CheckIn>();
-		for(CheckIn checkIn: checkIns)
-		{
-			if(checkIn.getCheckInTime().getTime() >= start.getTime() 
-					&& checkIn.getCheckInTime().getTime() <= end.getTime())
-				inRange.add(checkIn);
-		}
-		return inRange.size();
+	public int getCheckInInTimeRangeNum(Long uid, Integer hid, Date start, Date end) {
+		return getCheckInInTimeRange(uid,hid,start,end).size();
 	}
 
+	@Override
+	public List<CheckIn> getCheckInInTimeRange(Long uid, Integer hid, Date start, Date end) {
+		List<CheckIn> checkIns = getCheckIns(uid,hid);
+//		System.out.println("checkins "+checkIns.size());
+		List<CheckIn> inRange = new ArrayList<CheckIn>();
+		//Collections.sort(checkIns,CheckIn.getDateComparator());
+
+		for(CheckIn checkIn: checkIns)
+		{
+//			System.out.println("#checkin "+checkIn.getCheckInTime());
+			if(checkIn.getCheckInTime().getTime() > end.getTime())
+			{
+				
+//				System.out.println("continue");
+				continue;
+			}
+			if(checkIn.getCheckInTime().getTime() < start.getTime())
+			{
+				//				System.out.println("break");
+				break;
+			}
+//			System.out.println("add");
+			inRange.add(checkIn);
+		}
+		return inRange;
+	}
+
+	@Override
+	public List<CheckIn> getCheckInInTimeRange(Long uid, Integer hid, Date start,
+			Date end, Integer startpos, Integer endpos) {
+		return Utils.subList(startpos, endpos, getCheckInInTimeRange(uid,hid,start,end));
+	}
+
+	@Override
+	public void deleteCheckIn(Integer cid) {
+		CheckIn checkIn  = checkInDao.get(cid);
+		checkIn.getUser().getCheckIns().remove(checkIn);
+		checkIn.getHabit().getCheckIns().remove(checkIn);
+		checkIn.setUser(null);
+		checkIn.setHabit(null);
+		checkInDao.delete(checkIn);
+	}
 }

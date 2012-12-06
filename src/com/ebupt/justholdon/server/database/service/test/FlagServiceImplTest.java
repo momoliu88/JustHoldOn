@@ -120,19 +120,19 @@ public class FlagServiceImplTest {
 		flagService.removeHabit(hids.get(1), flagIds.get(0));
 		flagService.removeHabit(hids.get(2), flagIds.get(0));	
 		
-		flagService.delete(flagIds.get(0));
-		flagService.delete(flagIds.get(1));
-		flagService.delete(flagIds.get(2));
-		
-		System.out.println(" delete uid");
-
-		for(Long id:uids)
-			userService.delete(id);
-		for(Integer id:hids)
-		{
-			System.out.println("id "+id);
-			habitService.delete(id);
-		}
+//		flagService.delete(flagIds.get(0));
+//		flagService.delete(flagIds.get(1));
+//		flagService.delete(flagIds.get(2));
+//		
+//		System.out.println(" delete uid");
+//
+//		for(Long id:uids)
+//			userService.delete(id);
+//		for(Integer id:hids)
+//		{
+//			System.out.println("id "+id);
+//			habitService.delete(id);
+//		}
 		
 	}
 

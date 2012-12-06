@@ -18,4 +18,8 @@ public interface EventService extends GenericService<Event, Integer> {
 	
 	public void readAInformation(Integer infoId);
 	public List<Event> getUnreadInformation(Long uid);
+	public List<Event> getRelevantEvent(Long uid);
+	public List<Event> getRelevantEvent(Long uid,Integer start,Integer end);
+//just for test
+	public void deleteEvent(Integer event);
 }

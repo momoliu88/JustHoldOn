@@ -45,24 +45,24 @@ public class User {
 	private String deviceToken;
 	private String token;
 	
-	@OneToMany(mappedBy="user",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="user",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<SystemInfoSended> receiveSystemInfos = new HashSet<SystemInfoSended>();
 	
-	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Event> sponsorEvent = new HashSet<Event>();
-	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Event> receiverEvent = new HashSet<Event>();
 	
-	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Comment> sponsorComments = new HashSet<Comment>();
-	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Comment> receiverComments = new HashSet<Comment>();
 	
-	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Event> sponsorMessages = new HashSet<Event>();
-	
-	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Event> receiveMessages = new HashSet<Event>();
+//	@OneToMany(mappedBy="sponsor",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	private Set<Event> sponsorMessages = new HashSet<Event>();
+//	
+//	@OneToMany(mappedBy="receiver",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//	private Set<Event> receiveMessages = new HashSet<Event>();
 	
 	@OneToMany(mappedBy="user",cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<WeeklySummary> weeklySummaries = new HashSet<WeeklySummary>();
@@ -261,9 +261,9 @@ public class User {
 		return this;
 	}
 
-	public Set<Event> getSponsorMessages() {
-		return sponsorMessages;
-	}
+//	public Set<Event> getSponsorMessages() {
+//		return sponsorMessages;
+//	}
 
 	public Set<Event> getSponsorEvent() {
 		return sponsorEvent;
@@ -281,19 +281,19 @@ public class User {
 		this.receiverEvent = receiverEvent;
 	}
 
-	public User setSponsorMessages(Set<Event> sponsorMessages) {
-		this.sponsorMessages = sponsorMessages;
-		return this;
-	}
-
-	public Set<Event> getReceiveMessages() {
-		return receiveMessages;
-	}
-
-	public User setReceiveMessages(Set<Event> receiveMessages) {
-		this.receiveMessages = receiveMessages;
-		return this;
-	}
+//	public User setSponsorMessages(Set<Event> sponsorMessages) {
+//		this.sponsorMessages = sponsorMessages;
+//		return this;
+//	}
+//
+//	public Set<Event> getReceiveMessages() {
+//		return receiveMessages;
+//	}
+//
+//	public User setReceiveMessages(Set<Event> receiveMessages) {
+//		this.receiveMessages = receiveMessages;
+//		return this;
+//	}
 
 	public Set<Comment> getSponsorComments() {
 		return sponsorComments;
