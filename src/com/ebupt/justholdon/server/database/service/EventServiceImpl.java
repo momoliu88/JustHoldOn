@@ -55,11 +55,11 @@ public class EventServiceImpl implements EventService {
 		User sponsor = event.getSponsor();
 		User receiver = event.getReceiver();
 		Habit habit = event.getHabit();
-		if(null != sponsor)
+		if (null != sponsor)
 			sponsor.getSponsorEvent().remove(event);
-		if(null != receiver)
+		if (null != receiver)
 			receiver.getReceiverEvent().remove(event);
-		if(null != habit)
+		if (null != habit)
 			habit.getEvents().remove(event);
 		event.setSponsor(null);
 		event.setReceiver(null);
@@ -81,9 +81,9 @@ public class EventServiceImpl implements EventService {
 					"event type or message flag can't be NULL!");
 		User sponsor = null;
 		User receiver = null;
-		if(null != sponsorId)
+		if (null != sponsorId)
 			sponsor = userDao.get(sponsorId);
-		if(null != receiverId)
+		if (null != receiverId)
 			receiver = userDao.get(receiverId);
 		Habit habit = null;
 		if (null != habitId)
@@ -105,9 +105,9 @@ public class EventServiceImpl implements EventService {
 					"event type or message flag can't be NULL!");
 		User sponsor = null;
 		User receiver = null;
-		if(null != sponsorId)
+		if (null != sponsorId)
 			sponsor = userDao.get(sponsorId);
-		if(null != receiverId)
+		if (null != receiverId)
 			receiver = userDao.get(receiverId);
 		Event event = new Event().setContent(content)
 				.setFlag(MessageFlag.UNREADED).setSponsor(sponsor)
@@ -123,9 +123,9 @@ public class EventServiceImpl implements EventService {
 					"event type or message flag can't be NULL!");
 		User sponsor = null;
 		User receiver = null;
-		if(null != sponsorId)
+		if (null != sponsorId)
 			sponsor = userDao.get(sponsorId);
-		if(null != receiverId)
+		if (null != receiverId)
 			receiver = userDao.get(receiverId);
 		Habit habit = habitDao.get(habitId);
 
@@ -162,30 +162,34 @@ public class EventServiceImpl implements EventService {
 	public List<Event> getUnreadInformation(Long uid) {
 		User user = userDao.get(uid);
 		Set<Event> events = user.getReceiverEvent();
-		List<Event> results = new ArrayList<Event>();	
-		for(Event event : events)
-		{
-			if(event.getFlag().equals(MessageFlag.UNREADED))
+		List<Event> results = new ArrayList<Event>();
+		for (Event event : events) {
+			if (event.getFlag().equals(MessageFlag.UNREADED))
 				results.add(event);
 		}
-		Collections.sort(results,Event.getDateComparator());
+		Collections.sort(results, Event.getDateComparator());
 		return results;
 	}
 
-	@Override
-	public List<Event> getRelevantEvent(Long uid) {
+	private List<Event> getRelevantEventOri(Long uid) {
 		User user = userDao.get(uid);
 		Set<Event> sponsortEvents = user.getSponsorEvent();
 		Set<Event> receiverEvents = user.getReceiverEvent();
 		List<Event> ret = new ArrayList<Event>();
 
-		for(Event event:sponsortEvents)
-			if(event.getFlag().equals(MessageFlag.JUST_EVENT))
+		for (Event event : sponsortEvents)
+			if (event.getFlag().equals(MessageFlag.JUST_EVENT))
 				ret.add(event);
-		for(Event event:receiverEvents)
-			if(event.getFlag().equals(MessageFlag.JUST_EVENT))
+		for (Event event : receiverEvents)
+			if (event.getFlag().equals(MessageFlag.JUST_EVENT))
 				ret.add(event);
-		Collections.sort(ret,Event.getDateComparator());
+		return ret;
+	}
+
+	@Override
+	public List<Event> getRelevantEvent(Long uid) {
+		List<Event> ret = getRelevantEventOri(uid);
+		Collections.sort(ret, Event.getDateComparator());
 		return ret;
 	}
 
@@ -197,6 +201,44 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public void deleteEvent(Integer eventid) {
 		delete(eventid);
+	}
+
+	@Override
+	public List<Event> getRelevantEventFromId(Long uid, Integer startId,
+			Integer length, boolean after) {
+		List<Event> ori = getRelevantEventOri(uid);
+		Collections.sort(ori, Event.getIdComparator());
+		// List<Event> ret = new ArrayList<Event>();
+		Integer startpos = null;
+		Integer endpos = null;
+		if (ori.isEmpty())
+			return null;
+
+		if (null == startId)
+			return Utils.subList(0, length, ori);
+
+		// Event startEvent = ori.get(0);
+		Integer indx = 0;
+		boolean finded = false;
+		for (Event event : ori) {
+			if (event.getId() == startId) {
+				finded = true;
+				break;
+			}
+			indx++;
+		}
+		if (!finded)
+			return null;
+		if (after) {
+			startpos = indx + 1;
+			endpos = indx + length + 1;
+		} else {
+			startpos = indx - length;
+			if (startpos < 0)
+				startpos = 0;
+			endpos = indx;
+		}
+		return Utils.subList(startpos, endpos, ori);
 	}
 
 }

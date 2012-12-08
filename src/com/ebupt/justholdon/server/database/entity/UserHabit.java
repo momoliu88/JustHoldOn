@@ -34,8 +34,12 @@ public class UserHabit {
 	private String currentStage = "INIT";
 	private HabitState stat = HabitState.ING;
 	private Date modifyTime;
+	private int times = 0;
 	private PrivilegeType privilege = PrivilegeType.ALL;
-	
+	private PersistUnit unit;
+ 	private String stages;
+ 	private String description;
+
 	
 	private static Comparator<UserHabit> dateComparator = new Comparator<UserHabit>() {
 		@Override
@@ -43,6 +47,16 @@ public class UserHabit {
 			return (int) (arg2.getCreateTime().getTime() - arg1.getCreateTime().getTime());
 		}
 	};
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public UserHabit setDescription(String description) {
+		this.description = description;
+		return this;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -148,6 +162,33 @@ public class UserHabit {
 
 	public static Comparator<UserHabit> getDateComparator() {
 		return dateComparator;
+	}
+
+	public int getTimes() {
+		return times;
+	}
+
+	public UserHabit setTimes(int times) {
+		this.times = times;
+		return this;
+	}
+
+	public PersistUnit getUnit() {
+		return unit;
+	}
+
+	public UserHabit setUnit(PersistUnit unit) {
+		this.unit = unit;
+		return this;
+	}
+
+	public String getStages() {
+		return stages;
+	}
+
+	public UserHabit setStages(String stages) {
+		this.stages = stages;
+		return this;
 	}
 	
 	 

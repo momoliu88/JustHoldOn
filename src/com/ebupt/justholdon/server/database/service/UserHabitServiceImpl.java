@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.dao.UserHabitDao;
+import com.ebupt.justholdon.server.database.entity.EventType;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
@@ -31,7 +32,8 @@ public class UserHabitServiceImpl implements UserHabitService {
 	private UserService userService;
 	@Autowired
 	private HabitDao habitDao;
-
+	@Autowired
+	private EventService eventService; 
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Override
@@ -67,11 +69,13 @@ public class UserHabitServiceImpl implements UserHabitService {
 	@Override
 	public void delete(Integer id) {
 		UserHabit userHabit = userHabitDao.get(id);
-		userHabit.getUser().getUserHabits().remove(userHabit);
-		userHabit.getHabit().getUserHabits().remove(userHabit);
-		userHabit.setUser(null);
-		userHabit.setHabit(null);
-		userHabitDao.delete(userHabit);
+		userHabit.setStat(HabitState.DELETED);
+		userHabit.setEndTime(new Date());
+		//userHabit.getUser().getUserHabits().remove(userHabit);
+		//userHabit.getHabit().getUserHabits().remove(userHabit);
+		//userHabit.setUser(null);
+		//userHabit.setHabit(null);
+		userHabitDao.update(userHabit);
 	}
 
 	@Override
@@ -101,33 +105,13 @@ public class UserHabitServiceImpl implements UserHabitService {
 		Habit habit = habitDao.get(hid);
 		return connectUserHabit(user, habit, userHabit);
 	}
-
-	public boolean cancelUserHabit(User user, Habit habit, UserHabit userHabit) {
-		if ((null == user) || (null == habit) || (null == userHabit)) {
-			logger.debug("args can't be null");
-			return false;
-		}
-
-		if (userHabit.getStat() == HabitState.DELETED)
-			return false;
-		userHabit.setStat(HabitState.DELETED);
-		userHabit.setEndTime(new Date());
-
-		user.getUserHabits().remove(userHabit);
-		habit.getUserHabits().remove(userHabit);
-		System.out.println("update userHabitDao");
-
-		userHabitDao.update(userHabit);
-		userDao.update(user);
-		habitDao.update(habit);
-		return true;
-	}
-
-	@Override
-	public boolean cancelUserHabit(Long uid, Integer hid) {
+	
+//	@Override
+	public boolean exitHabit(Long uid, Integer hid) {
 		UserHabit userHabit = getUserHabit(uid,hid);
 		if(null == userHabit) return false;
-		return cancelUserHabit(userDao.get(uid), habitDao.get(hid), userHabit);
+		userHabitDao.delete(userHabit.getId());
+		return true;
 	}
 //
 //	@Override
@@ -184,6 +168,77 @@ public class UserHabitServiceImpl implements UserHabitService {
 	public List<UserHabit> getUserHabits(Long uid, Long beWatched,
 			Integer startpos, Integer endpos) {
 		return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched));
+	}
+	private List<UserHabit> getUserHabits(List<UserHabit> userHabits,HabitState habitState)
+	{
+		List<UserHabit> ret = new ArrayList<UserHabit>();
+		for(UserHabit userHabit:userHabits)
+			if(userHabit.getStat().equals(habitState))
+				ret.add(userHabit);
+		return ret;
+	}
+	
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, HabitState habitState) {
+		List<UserHabit> userHabits = getUserHabits(uid);
+		return getUserHabits(userHabits,habitState);
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, HabitState habitState,
+			Integer startpos, Integer endpos) {
+		return Utils.subList(startpos, endpos, getUserHabits(uid,habitState));
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, Long beWatched,
+			HabitState habitState) {
+		List<UserHabit> userHabits =getUserHabits(uid,beWatched);
+		return getUserHabits(userHabits,habitState);
+	}
+
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, Long beWatched,
+			HabitState habitState, Integer startpos, Integer endpos) {
+		return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched,habitState));
+	}
+
+	@Override
+	public boolean updateState(Long uid, Integer hid,HabitState state) {
+		UserHabit userHabit = getUserHabit(uid,hid);
+		if(null == userHabit) return false;
+		userHabit.setStat(state);
+		if(state.equals(HabitState.DELETED) || state.equals(HabitState.COMPLETED))
+			userHabit.setEndTime(new Date());
+		userHabitDao.update(userHabit);
+		return true;
+	}
+
+	@Override
+	public UserHabit getUserHabit(Long uid, Long beWatched, Integer hid) {
+		List<UserHabit> userHabits = getUserHabits(uid,beWatched);
+		for(UserHabit userHabit:userHabits)
+			if(userHabit.getHabit().getId() == hid)
+				return userHabit;
+		return null;
+	}
+
+	@Override
+	public void connectUserHabitAndCreateEvent(Long uid, Integer hid,
+			UserHabit uHid,String content) {
+		connectUserHabit(uid,hid,uHid);
+		eventService.createHabitEvent(uid, hid, EventType.SOMEBODY_JOININ_HABIT, content);
+	}
+
+	@Override
+	public void updateStateAndCteateEvent(Long uid, Integer hid,
+			HabitState state, String content) {
+		updateState(uid,hid,state);
+		if(state.equals(HabitState.CONSOLIDATING)||state.equals(HabitState.COMPLETED))
+			eventService.createHabitEvent(uid, hid, EventType.HOLDON_STAGE, content);
+		else if(state.equals(HabitState.DELETED))
+			eventService.createHabitEvent(uid, hid, EventType.QUIT_HABIT, content);
+
 	}
 
 }

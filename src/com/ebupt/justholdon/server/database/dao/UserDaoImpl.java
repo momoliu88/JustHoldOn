@@ -33,4 +33,8 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User,Long>  implements 
 	public int getFriends(Long id) {
 		return get(id).getFriends().size();
 	}
+	@Override
+	public User get(Long id) {
+		return (User) currentSession().get(User.class,id);
+	}
 }

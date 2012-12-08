@@ -15,6 +15,7 @@ import com.ebupt.justholdon.server.database.dao.CommentDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
 import com.ebupt.justholdon.server.database.entity.Comment;
+import com.ebupt.justholdon.server.database.entity.EventType;
 import com.ebupt.justholdon.server.database.entity.User;
 
 @Service("commentService")
@@ -26,7 +27,8 @@ public class CommentServiceImpl implements CommentService {
 	private UserDao userDao;
 	@Autowired
 	private CheckInDao checkInDao;
-
+	@Autowired
+	private EventService eventService;
 	@Override
 	public Integer save(Comment newInstance) {
 		return commentDao.save(newInstance);
@@ -105,6 +107,23 @@ public class CommentServiceImpl implements CommentService {
 	@Override
 	public void deleteComment(Integer commentId) {
 		delete(commentId);
+	}
+
+	@Override
+	public void createCommentAndCreateInformation(Long sponsor,
+			Long receiver, Integer checkInId, String comment, String content) {
+		Integer commentId = createComment(sponsor,receiver,checkInId,comment);
+		Integer hid = checkInDao.get(checkInId).getHabit().getId();
+		eventService.createHabitInfo(sponsor, receiver, hid, EventType.COMMENT_CHECKIN, content, commentId);
+	}
+
+	@Override
+	public void createCommentAndCreateInformation(Long sponsor,
+			Long receiver, Integer checkInId, Date date, String comment,
+			String content) {
+		Integer commentId = createComment(sponsor,receiver,checkInId,date,comment);
+		Integer hid = checkInDao.get(checkInId).getHabit().getId();
+		eventService.createHabitInfo(sponsor, receiver, hid, EventType.COMMENT_CHECKIN, content, commentId);
 	}
 
 }

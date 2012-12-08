@@ -86,9 +86,9 @@ public class CheckInServiceImplTest {
 				.setHabit(habitService.get(hids.get(0)));
 		CheckIn ck2 = new CheckIn().setUser(user)
 				.setHabit(habitService.get(hids.get(0)));
-		cids.add(checkInService.checkIn(ck));
-		cids.add(checkInService.checkIn(ck1));
-		cids.add(checkInService.checkIn(ck2));
+//		cids.add(checkInService.checkIn(ck));
+//		cids.add(checkInService.checkIn(ck1));
+//		cids.add(checkInService.checkIn(ck2));
 		assertEquals(3,user.getCheckIns().size());
 		
 
@@ -105,10 +105,10 @@ public class CheckInServiceImplTest {
 				.setHabit(habitService.get(hids.get(0)));
 		CheckIn ck4 = new CheckIn().setUser(user)
 				.setHabit(habitService.get(hids.get(1)));
-		cids.add(checkInService.checkIn(ck1));
-		cids.add(checkInService.checkIn(ck2));
-		cids.add(checkInService.checkIn(ck3));
-		cids.add(checkInService.checkIn(ck4));
+//		cids.add(checkInService.checkIn(ck1));
+//		cids.add(checkInService.checkIn(ck2));
+//		cids.add(checkInService.checkIn(ck3));
+//		cids.add(checkInService.checkIn(ck4));
 
 		List<CheckIn> cksForHabit0 =checkInService.getCheckIns(uids.get(0), hids.get(0));
 		List<CheckIn> cksForHabit1 =checkInService.getCheckIns(uids.get(0), hids.get(1));
@@ -144,10 +144,10 @@ public class CheckInServiceImplTest {
 		cal.set(2012, 5,12,0,0,0);
 		CheckIn ck4 = new CheckIn().setUser(user)
 				.setHabit(habitService.get(hids.get(1))).setCheckInTime(cal.getTime());
-		cids.add(checkInService.checkIn(ck1));
-		cids.add(checkInService.checkIn(ck2));
-		cids.add(checkInService.checkIn(ck3));
-		cids.add(checkInService.checkIn(ck4));
+//		cids.add(checkInService.checkIn(ck1));
+//		cids.add(checkInService.checkIn(ck2));
+//		cids.add(checkInService.checkIn(ck3));
+//		cids.add(checkInService.checkIn(ck4));
 		 cal.set(2012, 5, 10,5,0,0);
 		Date start =cal.getTime();
 		 cal.set(2012, 5, 11,0,0,0);

@@ -19,6 +19,7 @@ import com.ebupt.justholdon.server.database.entity.PersistUnit;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserHabit;
 import com.ebupt.justholdon.server.database.service.HabitService;
+import com.ebupt.justholdon.server.database.service.HabitState;
 import com.ebupt.justholdon.server.database.service.UserHabitService;
 import com.ebupt.justholdon.server.database.service.UserService;
 
@@ -103,11 +104,11 @@ public class HabitServiceImplTest {
 		userService.removeFriend(uids.get(1), uids.get(0));
 		userService.removeFriend(uids.get(1), uids.get(2));
 
-		userHabitService.cancelUserHabit(uids.get(0), hids.get(0));
-		userHabitService.cancelUserHabit(uids.get(0), hids.get(1));
-		userHabitService.cancelUserHabit(uids.get(0), hids.get(2));
-		userHabitService.cancelUserHabit(uids.get(1), hids.get(1));
-		userHabitService.cancelUserHabit(uids.get(2), hids.get(1));
+		userHabitService.updateState(uids.get(0), hids.get(0),HabitState.DELETED);
+		userHabitService.updateState(uids.get(0), hids.get(1),HabitState.DELETED);
+		userHabitService.updateState(uids.get(0), hids.get(2),HabitState.DELETED);
+		userHabitService.updateState(uids.get(1), hids.get(1),HabitState.DELETED);
+		userHabitService.updateState(uids.get(2), hids.get(1),HabitState.DELETED);
 //
 //		for (Long id : uids)
 //			userService.delete(id);

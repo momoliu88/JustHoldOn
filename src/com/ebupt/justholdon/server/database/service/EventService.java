@@ -20,6 +20,11 @@ public interface EventService extends GenericService<Event, Integer> {
 	public List<Event> getUnreadInformation(Long uid);
 	public List<Event> getRelevantEvent(Long uid);
 	public List<Event> getRelevantEvent(Long uid,Integer start,Integer end);
+	
+	//get event from startId;
+	//if startId == null,get newest event 
+	public List<Event> getRelevantEventFromId(Long uid,Integer startId ,Integer length,boolean after);
+
 //just for test
 	public void deleteEvent(Integer event);
 }

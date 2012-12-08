@@ -29,23 +29,23 @@ public class UserServiceTest {
 		ApplicationContext ctx = new FileSystemXmlApplicationContext("bean.xml");
 		service = (UserFieldService) ctx.getBean("userFieldService");
 		userService = (UserService) ctx.getBean("userService");
-
-		UserField user = new UserField().setId(101L).setUserName("name")
-				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
-				.setAvatar("ava");
-		
-		UserField user1 = new UserField().setId(102L).setUserName("name1")
-				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
-				.setAvatar("ava");
-		UserField user2 = new UserField().setId(103L).setUserName("name2")
-				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
-				.setAvatar("ava");
-		UserField user3 = new UserField().setId(104L).setUserName("name3")
-				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
-				.setAvatar("ava");
-		UserField user4 = new UserField().setId(105L).setUserName("name4")
-				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
-				.setAvatar("ava");
+//
+//		UserField user = new UserField().setId(101L).setUserName("name")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
+//		
+//		UserField user1 = new UserField().setId(102L).setUserName("name1")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
+//		UserField user2 = new UserField().setId(103L).setUserName("name2")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
+//		UserField user3 = new UserField().setId(104L).setUserName("name3")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
+//		UserField user4 = new UserField().setId(105L).setUserName("name4")
+//				.setDeviceToken("device").setWeiboKey("123").setPassword("123")
+//				.setAvatar("ava");
 		/*
 		uids.add(service.createAndSave("username", "pass", 123L, "avatar", "device",
 				"token"));
@@ -61,10 +61,12 @@ public class UserServiceTest {
 	public void tearDown() throws Exception {
 //		for(Long id:uids)
 //			service.delete(id);
+		
 	}
 
 	@Test
 	public void testCreateAndSave() {	
+		System.out.println(userService.isValideUser(19L, "123"));
 		 
 	}
 /*

@@ -19,6 +19,7 @@ import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserHabit;
 import com.ebupt.justholdon.server.database.service.CheckInService;
 import com.ebupt.justholdon.server.database.service.HabitService;
+import com.ebupt.justholdon.server.database.service.HabitState;
 import com.ebupt.justholdon.server.database.service.UserHabitService;
 import com.ebupt.justholdon.server.database.service.UserService;
 
@@ -93,5 +94,30 @@ public class UserHabitServiceImplTest {
 		assertEquals(2,userHabits.size());
 		userService.removeFriend(uids.get(0), uids.get(1));
 	}
+//	@Test
+//	public void testGetUserHabitsHabitState()
+//	{
+//		userHabitService.exitHabit(uids.get(0), hids.get(0));
+//		List<UserHabit>userHabitsAll = userHabitService.getUserHabits(uids.get(0));
+//		List<UserHabit>userHabits = userHabitService.getUserHabits(uids.get(0), HabitState.DELETED);
+//		assertEquals(1,userHabits.size());
+//		assertEquals(3,userHabitsAll.size());
+//	}
+	@Test
+	public void testGetUserWatchedHabitsHabitState()
+	{
+		List<UserHabit> userHabits = userHabitService.getUserHabits(uids.get(1), uids.get(0),HabitState.DELETED);
+		assertEquals(0,userHabits.size());
+	
+		userHabitService.updateState(uids.get(0), hids.get(1),HabitState.DELETED);
+		userHabitService.updateState(uids.get(0), hids.get(2),HabitState.DELETED);
+		userHabits = userHabitService.getUserHabits(uids.get(1), uids.get(0),HabitState.DELETED);
+		assertEquals(1,userHabits.size());
 
+		userService.beFriend(uids.get(0), uids.get(1));
+		userHabits = userHabitService.getUserHabits(uids.get(1), uids.get(0),HabitState.DELETED);
+		assertEquals(2,userHabits.size());
+	}
+	
+	
 }

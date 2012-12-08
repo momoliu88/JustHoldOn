@@ -7,8 +7,11 @@ import java.util.Date;
 public interface CheckInService extends GenericService<CheckIn,Integer> {
 	//check in: userid and habitid can't be null
 	public Integer checkIn(Long uid,Integer hid);
+	public void checkInAndCreateEvent(Long uid,Integer hid,String content);
 	//check in:checkIn.user and checkIn.habit can't be null
-	public Integer checkIn(CheckIn checkIn);
+	public Integer checkIn(Long uid,Integer hid,CheckIn checkIn);
+	public void checkInAndCreateEvent(Long uid,Integer hid,CheckIn checkIn,String content);
+
 	
 	//delete checkin，just for test,no need in practise
 	public void deleteCheckIn(Integer cid);

@@ -15,6 +15,7 @@ import com.ebupt.justholdon.server.database.dao.CheckInDao;
 import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
+import com.ebupt.justholdon.server.database.entity.EventType;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.User;
 
@@ -27,6 +28,8 @@ public class CheckInServiceImpl implements CheckInService{
 	private UserDao userDao;
 	@Autowired
 	private HabitDao habitDao;
+	@Autowired
+	private EventService eventService;
 	
 //	private Logger logger = Logger.getLogger(this.getClass());
 	@Override
@@ -81,16 +84,12 @@ public class CheckInServiceImpl implements CheckInService{
 	}
 
 	@Override
-	public Integer checkIn(CheckIn checkIn) {
-//		User user = checkIn.getUser();
-//		Habit habit = checkIn.getHabit();
-//		if(user == null || habit == null) return -1;
-//		user.getCheckIns().add(checkIn);
-//		habit.getCheckIns().add(checkIn);
- 		Integer id = checkInDao.save(checkIn);
-// 		userDao.update(user);
-// 		habitDao.update(habit);
- 		return id;
+	public Integer checkIn(Long uid,Integer hid,CheckIn checkIn){
+		User user = userDao.get(uid);
+		Habit habit = habitDao.get(hid);
+		if(null != checkIn)
+			checkIn.setUser(user).setHabit(habit);
+ 		return checkInDao.save(checkIn);
 	}
 
 	@Override
@@ -163,5 +162,16 @@ public class CheckInServiceImpl implements CheckInService{
 		checkIn.setUser(null);
 		checkIn.setHabit(null);
 		checkInDao.delete(checkIn);
+	}
+
+	@Override
+	public void checkInAndCreateEvent(Long uid, Integer hid, String content) {
+		checkIn(uid,hid);
+		eventService.createHabitEvent(uid, hid, EventType.SOMEBODY_CHECKIN, content);
+	}
+	@Override
+	public void checkInAndCreateEvent(Long uid,Integer hid,CheckIn checkIn, String content) {
+		checkIn(uid,hid,checkIn);
+		eventService.createHabitEvent(uid,hid, EventType.SOMEBODY_CHECKIN, content);
 	}
 }
