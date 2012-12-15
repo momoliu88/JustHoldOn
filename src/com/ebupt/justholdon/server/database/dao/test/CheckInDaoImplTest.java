@@ -69,7 +69,7 @@ public class CheckInDaoImplTest {
 	public void testRead() {
 		Criterion criterion = Restrictions.eq("user.id", id);
 		List<CheckIn> checkIns = checkInDao.findByCriteria(criterion);
-		assertEquals(checkIns.get(0).getHabit().getId(),habitId);
+		assertEquals(checkIns.get(0).getHabit().getId(),Integer.valueOf(habitId));
   	}
 
 	@Test

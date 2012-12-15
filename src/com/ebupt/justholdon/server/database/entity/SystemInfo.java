@@ -1,6 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +16,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "system_infos")
-public class SystemInfo {
+public class SystemInfo implements BaseEntity<Integer>{
 	public SystemInfo() {
 	};
 
@@ -26,6 +26,7 @@ public class SystemInfo {
 	private String content;
 	private String extra;
 	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 	private Boolean isSystemInfo = true;
 	
 	@OneToMany(mappedBy="systemInfo",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -33,20 +34,28 @@ public class SystemInfo {
 	public Integer getId() {
 		return id;
 	}
-	private static Comparator<SystemInfo> dateComparator = new Comparator<SystemInfo>() {
-		@Override
-		public int compare(SystemInfo info1, SystemInfo info2) {
-			return (int) (info2.getCreateTime().getTime()- info1.getCreateTime().getTime());
-		}
-	};
-	
+//	private static Comparator<SystemInfo> dateComparator = new Comparator<SystemInfo>() {
+//		@Override
+//		public int compare(SystemInfo info1, SystemInfo info2) {
+//			return (int) (info2.getCreateTime().getTime()- info1.getCreateTime().getTime());
+//		}
+//	};
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
 	public String getContent() {
 		return content;
 	}
 
-	public static Comparator<SystemInfo> getDateComparator() {
-		return dateComparator;
-	}
+//	public static Comparator<SystemInfo> getDateComparator() {
+//		return dateComparator;
+//	}
 
 	public SystemInfo setContent(String content) {
 		this.content = content;

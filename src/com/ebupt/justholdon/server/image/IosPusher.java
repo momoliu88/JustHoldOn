@@ -102,7 +102,7 @@ public class IosPusher {
 		IosPusher pusher = new IosPusher();
 		List<String> tokens = new ArrayList<String>();
 		tokens.add("6c102c5c9e7dfed9bcb19355ff02ba44cf2efed280ddc9fdd4a7f555709bd53e");
-		for(int i = 0 ;i<10;i++)
-		pusher.sendpush(tokens, "/Users/xiaoqinliu/Downloads/Key.p12", "1082325588", "{'aps':{'alert':'iphone推送测试 www.baidu.com'}}", 10, true,false);
+		for(int i = 0 ;i<4;i++)
+		pusher.sendpush(tokens, "/Users/xiaoqinliu/Downloads/Key.p12", "1082325588", "{'aps':{'alert':'iphone推送测试 www.baidu.com'}}",-1,true,false);
 	}
 }

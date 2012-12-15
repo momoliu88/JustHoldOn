@@ -104,14 +104,16 @@ public class UserServiceImpl implements UserService {
 			return false;
 		return user.getPassword().equals(password);
 	}
+	@Override
 	public List<User> findFriends(Long uid) {
 		User user = userDao.get(uid);
 		List<User> friends = new ArrayList<User>(user.getFriends());
 		return friends;
 	}
 	@Override
-	public List<User> findFriends(Long uid, Integer start, Integer end) {
-		return Utils.subList(start, end, findFriends(uid));
+	public List<User> findFriends(Long uid, Integer startId, Integer length,boolean after) {
+	//	return Utils.subList(start, end, findFriends(uid));
+		return Utils.cutEventList(findFriends(uid), startId, length, after);
 	}
 
 	@Override
@@ -126,10 +128,11 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> findUsers(ComparatorType type, Integer start, Integer end) {
+	public List<User> findUsers(ComparatorType type, Integer startId, Integer length,boolean after) {
 		List<User> users = findUsers(type);
 		if(null == users) return null;
-		return Utils.subList(start, end, users);
+	//	return Utils.subList(start, end, users);
+		return Utils.cutEventList(users, startId, length, after, true);
 	}
 
 	@Override
@@ -145,9 +148,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> searchFriend(Long uid, String key, Integer start,
-			Integer end) {
-		return Utils.subList(start, end, searchFriend(uid,key));
+	public List<User> searchFriend(Long uid, String key, Integer startId,
+			Integer length,boolean after) {
+		//return Utils.subList(start, end, searchFriend(uid,key));
+		return Utils.cutEventList(searchFriend(uid,key), startId, length, after);
 	}
 	/*for test*/
 //	public static void main(String args[])

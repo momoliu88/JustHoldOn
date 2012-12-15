@@ -21,6 +21,7 @@ import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserHabit;
 import com.ebupt.justholdon.server.database.service.CheckInService;
+import com.ebupt.justholdon.server.database.service.EventService;
 import com.ebupt.justholdon.server.database.service.HabitService;
 import com.ebupt.justholdon.server.database.service.UserHabitService;
 import com.ebupt.justholdon.server.database.service.UserService;
@@ -30,6 +31,7 @@ public class CheckInServiceImplTest {
 	static UserService userService;
 	static UserHabitService userHabitService;
 	static CheckInService checkInService;
+	static EventService eventService;
 	static List<Integer> hids = new ArrayList<Integer>();
 	static List<Long> uids = new ArrayList<Long>();
 	static List<Integer> cids = new ArrayList<Integer>();
@@ -37,6 +39,7 @@ public class CheckInServiceImplTest {
 		ApplicationContext ctx = new FileSystemXmlApplicationContext("bean.xml");
 		habitService = (HabitService) ctx.getBean("habitService");
 		userService = (UserService) ctx.getBean("userService");
+		eventService = (EventService) ctx.getBean("eventService");
 		userHabitService = (UserHabitService) ctx.getBean("userHabitService");
 		checkInService = (CheckInService) ctx.getBean("checkInService");
 		Habit habit = new Habit().setHabitName("name1").setUnit(PersistUnit.DAY)
@@ -86,9 +89,9 @@ public class CheckInServiceImplTest {
 				.setHabit(habitService.get(hids.get(0)));
 		CheckIn ck2 = new CheckIn().setUser(user)
 				.setHabit(habitService.get(hids.get(0)));
-//		cids.add(checkInService.checkIn(ck));
-//		cids.add(checkInService.checkIn(ck1));
-//		cids.add(checkInService.checkIn(ck2));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck1));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck2));
 		assertEquals(3,user.getCheckIns().size());
 		
 
@@ -105,29 +108,22 @@ public class CheckInServiceImplTest {
 				.setHabit(habitService.get(hids.get(0)));
 		CheckIn ck4 = new CheckIn().setUser(user)
 				.setHabit(habitService.get(hids.get(1)));
-//		cids.add(checkInService.checkIn(ck1));
-//		cids.add(checkInService.checkIn(ck2));
-//		cids.add(checkInService.checkIn(ck3));
-//		cids.add(checkInService.checkIn(ck4));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck1));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck2));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck3));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(1),ck4));
 
 		List<CheckIn> cksForHabit0 =checkInService.getCheckIns(uids.get(0), hids.get(0));
 		List<CheckIn> cksForHabit1 =checkInService.getCheckIns(uids.get(0), hids.get(1));
 
+		for(CheckIn ck:cksForHabit0)
+			System.out.println("#"+ck.getId()+' '+ck.getCheckInTime());
 		assertEquals(3,cksForHabit0.size());
 		assertEquals(1,cksForHabit1.size());
 
 	}
-//
-//	@Test
-//	public void testGetCheckInNum() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetCheckInsLongIntegerIntegerInteger() {
-//		fail("Not yet implemented");
-//	}
-//
+
+
 	@Test
 	public void testGetCheckInInTimeRangeNum() {
 		User user = userService.get(uids.get(0));
@@ -144,10 +140,10 @@ public class CheckInServiceImplTest {
 		cal.set(2012, 5,12,0,0,0);
 		CheckIn ck4 = new CheckIn().setUser(user)
 				.setHabit(habitService.get(hids.get(1))).setCheckInTime(cal.getTime());
-//		cids.add(checkInService.checkIn(ck1));
-//		cids.add(checkInService.checkIn(ck2));
-//		cids.add(checkInService.checkIn(ck3));
-//		cids.add(checkInService.checkIn(ck4));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck1));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck2));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck3));
+		cids.add(checkInService.checkIn(uids.get(0),hids.get(1),ck4));
 		 cal.set(2012, 5, 10,5,0,0);
 		Date start =cal.getTime();
 		 cal.set(2012, 5, 11,0,0,0);
@@ -163,16 +159,22 @@ public class CheckInServiceImplTest {
 
 		assertEquals(2,checkInService.getCheckInInTimeRangeNum(uids.get(0), hids.get(0), start, end));
 		assertEquals(1,checkInService.getCheckInInTimeRangeNum(uids.get(0),hids.get(1), start1, end1));
+		
 	}
 
 	@Test
 	public void testGetCheckInInTimeRangeLongIntegerDateDate() {
 		
 	}
-//
-//	@Test
-//	public void testGetCheckInInTimeRangeLongIntegerDateDateIntegerInteger() {
-//		fail("Not yet implemented");
-//	}
+ 
+	@Test
+	public void testcheckInAndCreateEvent()
+	{
+		checkInService.checkInAndCreateEvent(uids.get(0), hids.get(0), "content");
+		assertEquals(1,eventService.findAll().size());
+		CheckIn ck = new CheckIn().setPicUrl("new");
+		checkInService.checkInAndCreateEvent(uids.get(0), hids.get(0),ck, "abc");
+		assertEquals(2,eventService.findAll().size());
+	}
 
 }

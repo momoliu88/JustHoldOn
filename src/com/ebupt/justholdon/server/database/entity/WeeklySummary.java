@@ -1,6 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -13,7 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "weeklySummary")
-public class WeeklySummary {
+public class WeeklySummary implements BaseEntity<Integer>{
 	public WeeklySummary(){};
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,18 +24,21 @@ public class WeeklySummary {
 	private int goalCheckInTimes;
 	private int actualCheckInTimes;
 	private Date createTime = new Date();
+	private Date modifyTime = new Date();
+
 	private String comment;
-	public int getId() {
+	@Override
+	public Integer getId() {
 		return id;
 	}
-	private static Comparator<WeeklySummary> dateComparator = new Comparator<WeeklySummary>()
-			{
-				@Override
-				public int compare(WeeklySummary arg0, WeeklySummary arg1) {
-					return (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime().getTime());
-				}
-		
-			};
+//	private static Comparator<WeeklySummary> dateComparator = new Comparator<WeeklySummary>()
+//			{
+//				@Override
+//				public int compare(WeeklySummary arg0, WeeklySummary arg1) {
+//					return (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime().getTime());
+//				}
+//		
+//			};
 	public User getUser() {
 		return user;
 	}
@@ -73,7 +76,16 @@ public class WeeklySummary {
 		this.comment = comment;
 		return this;
 	}
-	public static Comparator<WeeklySummary> getDateComparator() {
-		return dateComparator;
+//	public static Comparator<WeeklySummary> getDateComparator() {
+//		return dateComparator;
+//	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
 	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+	
 }

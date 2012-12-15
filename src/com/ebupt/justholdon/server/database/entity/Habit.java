@@ -1,6 +1,7 @@
 package com.ebupt.justholdon.server.database.entity;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "habits")
-public class Habit {
+public class Habit implements BaseEntity<Integer>{
 	public Habit() {
 	};
 
@@ -32,6 +33,8 @@ public class Habit {
 	private String groupName;
 	private String description;
 	private int times;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<CheckIn> checkIns = new HashSet<CheckIn>();
 	@OneToMany(mappedBy = "habit", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -67,8 +70,8 @@ public class Habit {
 	public void setUserHabits(Set<UserHabit> userHabits) {
 		this.userHabits = userHabits;
 	}
-
-	public int getId() {
+	@Override
+	public Integer getId() {
 		return id;
 	}
 
@@ -163,5 +166,22 @@ public class Habit {
 		this.events = events;
 		return this;
 	}
-	
+	@Override
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
+	 
 }

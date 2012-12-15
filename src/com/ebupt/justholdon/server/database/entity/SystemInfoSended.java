@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "system_info_sended_tb")
-public class SystemInfoSended {
+public class SystemInfoSended implements BaseEntity<Long>{
 	public SystemInfoSended(){};
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +24,29 @@ public class SystemInfoSended {
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
 	private Date sendTime = new Date();
-	
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
+	@Override
 	public Long getId() {
 		return id;
 	}
+	@Override
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
+	}
+
 	public SystemInfo getSystemInfo() {
 		return systemInfo;
 	}

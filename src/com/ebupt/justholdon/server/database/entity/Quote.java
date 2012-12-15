@@ -1,5 +1,7 @@
 package com.ebupt.justholdon.server.database.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,14 +10,17 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "quots")
-public class Quote {
+public class Quote implements BaseEntity<Integer>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String content;
 	private String author;
-
-	public int getId() {
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
+	
+	@Override
+	public Integer getId() {
 		return id;
 	}
 
@@ -37,6 +42,22 @@ public class Quote {
 
 	public void setAuthor(String author) {
 		this.author = author;
+	}
+	@Override
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 }

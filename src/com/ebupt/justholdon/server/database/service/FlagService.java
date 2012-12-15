@@ -8,7 +8,7 @@ import com.ebupt.justholdon.server.database.entity.Habit;
 public interface FlagService extends GenericService<Flag,Integer>{
 	public List<Flag> findAll(boolean byHot,Integer start,Integer end);
 	public List<Flag> findAll(boolean byHot);
-	public List<Flag> findAType(String targetType,Integer start,Integer end);
+	public List<Flag> findAType(String targetType,Integer startId,Integer length,boolean after);
 
 	public void addUser(Long uid,Integer fid);
 	public void removeUser(Long uid,Integer fid);
@@ -17,6 +17,6 @@ public interface FlagService extends GenericService<Flag,Integer>{
 	
 	public int findHabitCounts(List<Integer>flagIds);
 	public List<Habit> findHabits(List<Integer>flagIds);
-	public List<Habit> findHabits(List<Integer>flagIds,Integer start,Integer end);
+	public List<Habit> findHabits(List<Integer>flagIds,Integer startId,Integer length,boolean after);
 
 }

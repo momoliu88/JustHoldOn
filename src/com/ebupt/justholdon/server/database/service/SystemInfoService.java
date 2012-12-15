@@ -9,8 +9,8 @@ public interface SystemInfoService extends GenericService<SystemInfo, Integer> {
 	public Integer createSystemInformation(String content,String extra,Date createDate);
 	
 	public List<SystemInfo> getUnreadedSystemInfo(Long uid);
-	public List<SystemInfo> getUnreadedSystemInfo(Long uid,Integer start,Integer end);
+	public List<SystemInfo> getUnreadedSystemInfo(Long uid,Integer startId,Integer length,boolean after);
 	//get all system information(read or unread)
-	public List<SystemInfo> getAllSystemInfo(Integer start,Integer end);
+	public List<SystemInfo> getAllSystemInfo(Integer startId,Integer length,boolean after);
 	public void readASystemInfo(Long uid,Integer id);
 }

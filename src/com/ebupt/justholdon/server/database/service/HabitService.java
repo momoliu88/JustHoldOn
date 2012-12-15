@@ -8,10 +8,10 @@ import com.ebupt.justholdon.server.database.entity.User;
 
 public interface HabitService extends GenericService<Habit, Integer> {
 	public List<Habit> findAll(boolean byHot);
-	public List<Habit> findAll(boolean byHot,Integer start,Integer end);
+	public List<Habit> findAll(boolean byHot,Integer start,Integer length,boolean after);
 
 	public List<Habit> findAGroup(String groupName);
-	public List<Habit> findAGroup(String groupName,Integer start,Integer end);
+	public List<Habit> findAGroup(String groupName,Integer startId,Integer length,boolean after);
 
 	public Map<String, Integer> groupNames();
 

@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "impressions")
-public class Impression {
+public class Impression implements BaseEntity<Integer> {
 	public Impression() {
 	};
 
@@ -25,10 +25,12 @@ public class Impression {
 	@ManyToOne
 	@JoinColumn(name = "userBId", nullable = false)
 	private User receiver;
-	private Date createTime = new Date();;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 	private String content;
 
-	public int getId() {
+	@Override
+	public Integer getId() {
 		return id;
 	}
 
@@ -43,7 +45,7 @@ public class Impression {
 
 	public Impression setSponsor(User sponsor) {
 		this.sponsor = sponsor;
-		if(sponsor != null)
+		if (sponsor != null)
 			sponsor.getSponseImpressiones().add(this);
 		return this;
 	}
@@ -54,11 +56,11 @@ public class Impression {
 
 	public Impression setReceiver(User receiver) {
 		this.receiver = receiver;
-		if(receiver != null)
+		if (receiver != null)
 			receiver.getReceivedImpressiones().add(this);
 		return this;
 	}
-
+	@Override
 	public Date getCreateTime() {
 		return createTime;
 	}
@@ -75,6 +77,14 @@ public class Impression {
 	public Impression setContent(String content) {
 		this.content = content;
 		return this;
+	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 }

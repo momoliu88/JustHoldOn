@@ -1,6 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +14,7 @@ import com.ebupt.justholdon.server.database.service.HabitState;
 
 @Entity
 @Table(name = "userHabits")
-public class UserHabit {
+public class UserHabit implements BaseEntity<Integer>{
 	public UserHabit() {
 	};
 
@@ -33,7 +33,7 @@ public class UserHabit {
 	private Date endTime;
 	private String currentStage = "INIT";
 	private HabitState stat = HabitState.ING;
-	private Date modifyTime;
+	private Date modifyTime = new Date();
 	private int times = 0;
 	private PrivilegeType privilege = PrivilegeType.ALL;
 	private PersistUnit unit;
@@ -41,12 +41,12 @@ public class UserHabit {
  	private String description;
 
 	
-	private static Comparator<UserHabit> dateComparator = new Comparator<UserHabit>() {
-		@Override
-		public int compare(UserHabit arg1, UserHabit arg2) {
-			return (int) (arg2.getCreateTime().getTime() - arg1.getCreateTime().getTime());
-		}
-	};
+//	private static Comparator<UserHabit> dateComparator = new Comparator<UserHabit>() {
+//		@Override
+//		public int compare(UserHabit arg1, UserHabit arg2) {
+//			return (int) (arg2.getCreateTime().getTime() - arg1.getCreateTime().getTime());
+//		}
+//	};
 	
 	public String getDescription() {
 		return description;
@@ -56,13 +56,14 @@ public class UserHabit {
 		this.description = description;
 		return this;
 	}
-
-	public int getId() {
+	@Override
+	public Integer getId() {
 		return id;
 	}
 
 	public UserHabit setId(int id) {
-		this.id = id;return this;
+		this.id = id;
+		return this;
 	}
 
 	public Habit getHabit() {
@@ -147,8 +148,8 @@ public class UserHabit {
 		return modifyTime;
 	}
 
-	public UserHabit setModifyTime(Date modifyTime) {
-		this.modifyTime = modifyTime;return this;
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 	public PrivilegeType getPrivilege() {
@@ -160,9 +161,9 @@ public class UserHabit {
 		return this;
 	}
 
-	public static Comparator<UserHabit> getDateComparator() {
-		return dateComparator;
-	}
+//	public static Comparator<UserHabit> getDateComparator() {
+//		return dateComparator;
+//	}
 
 	public int getTimes() {
 		return times;

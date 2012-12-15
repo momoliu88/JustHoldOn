@@ -12,15 +12,17 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import com.ebupt.justholdon.server.database.entity.Event;
-import com.ebupt.justholdon.server.database.entity.EventType;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.HabitType;
 import com.ebupt.justholdon.server.database.entity.MessageFlag;
 import com.ebupt.justholdon.server.database.entity.PersistUnit;
+import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
+import com.ebupt.justholdon.server.database.entity.UserHabit;
 import com.ebupt.justholdon.server.database.service.CheckInService;
 import com.ebupt.justholdon.server.database.service.CommentService;
 import com.ebupt.justholdon.server.database.service.EventService;
+import com.ebupt.justholdon.server.database.service.EventType;
 import com.ebupt.justholdon.server.database.service.HabitService;
 import com.ebupt.justholdon.server.database.service.UserHabitService;
 import com.ebupt.justholdon.server.database.service.UserService;
@@ -45,30 +47,37 @@ public class EventServiceImplTest {
 		commentService = (CommentService) ctx.getBean("commentService");
 		eventService = (EventService) ctx.getBean("eventService");
 		
-		Habit habit = new Habit().setHabitName("name1")
-				.setUnit(PersistUnit.DAY).setGroupName("groupName1")
-				.setType(HabitType.SYSTEM).setStages("{1,2,3}");
-		Habit habit1 = new Habit().setHabitName("name2")
-				.setUnit(PersistUnit.DAY).setGroupName("groupName1")
-				.setType(HabitType.SYSTEM).setStages("{1,2,3}");
-		User user1 = new User("user1", "password", "avatar", 787L, "device");
-		User user2 = new User("user2", "password", "avatar", 789L, "device");
-
-		hids.add(habitService.save(habit));
-		hids.add(habitService.save(habit1));
-
-		uids.add(userService.save(user1));
-		uids.add(userService.save(user2));
-		
-		for(int i =  0; i< 3;i++)
+		for(int i  = 0 ; i < 5;i++)
 		{
-		eventIds.add(eventService
-				.createHabitEvent(uids.get(0), hids.get(0),EventType.SOMEBODY_JOININ_HABIT, "how about to be friend"));
-		eventIds.add(eventService
-				.createFriendInfo(uids.get(0),uids.get(1), EventType.WANT_BE_FRIEND, "wanted to be friend"));
-		eventIds.add(eventService
-				.createHabitInfo(uids.get(0), uids.get(1),hids.get(0), EventType.INVITE_JOININ_HABIT, "invide to habit", null));
+			String name = "name"+i;
+			Habit habit = new Habit().setHabitName(name)
+					.setUnit(PersistUnit.DAY).setGroupName("groupName1")
+					.setType(HabitType.SYSTEM).setStages("{1,2,3}");
+//			hids.add(habitService.save(habit));
+			
 		}
+		for(int i = 0 ;i < 5;i++)
+		{
+			Long counter = 700L+i;
+			User user = new User("user1", "password", "avatar", counter, "device");
+//			uids.add(userService.save(user));
+		}
+		UserHabit uHid = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
+		UserHabit uHid1 = new UserHabit().setPrivilege(PrivilegeType.ALL);
+		UserHabit uHid2 = new UserHabit().setPrivilege(PrivilegeType.MYSELF);
+		UserHabit uHid3 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
+
+//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(0), uHid, "content"); 
+//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(1), uHid1, "content"); 
+//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(2), uHid2, "content"); 
+//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(3), uHid3, "content"); 
+//		UserHabit uHid4 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
+//		UserHabit uHid5 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
+//
+//		userHabitService.connectUserHabitAndCreateEvent(uids.get(1), hids.get(0), uHid4, "content"); 
+//		userHabitService.connectUserHabitAndCreateEvent(uids.get(3), hids.get(0), uHid5, "content"); 
+		
+//		 
 	}
 
 	@Before
@@ -158,19 +167,59 @@ public class EventServiceImplTest {
 //		assertEquals(1,events.size());
 //	}
 
+//	@Test
+//	public void testGetRelevantEventLongIntegerInteger() {
+//		List<Event> events = eventService.getRelevantEventFromId(787l, null, 5, true);
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
+//		events = eventService.getRelevantEventFromId(787l,89,10,false);
+//		System.out.println("========================");
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
+//	}
 	@Test
-	public void testGetRelevantEventLongIntegerInteger() {
-		List<Event> events = eventService.getRelevantEventFromId(uids.get(0), null, 5, true);
+	public void testgetRelevantEventFromIdLongBeWatched()
+	{
+		List<Event> events ;
+//		events=eventService.getRelevantEventFromId(uids.get(1),uids.get(0), null, 10, false);
+//		System.out.println("===========================");
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
+//		userService.beFriend(uids.get(0), uids.get(2));
+//		userService.beFriend(uids.get(1), uids.get(2));
+//		userService.beFriend(uids.get(0), uids.get(1));
+
+		events =eventService.getRelevantEventFromId(701l,700L, 224, 10, true);
+		System.out.println("=============223 false==============");
 		for(Event event:events)
 		{
 			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
 		}
-		events = eventService.getRelevantEventFromId(uids.get(0),41,10,false);
-		System.out.println("========================");
-		for(Event event:events)
-		{
-			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
-		}
+//		events = eventService.getAllFriendsRelevantEventFromId(uids.get(2), null, 10, true);
+//		System.out.println("===========================");
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
+//		events = eventService.getAHabitEvents(uids.get(0),hids.get(0), null, 10, true);
+//		System.out.println("===========================");
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
+//		
+//		events = eventService.getAUserHabitEvent(uids.get(0), uids.get(1),hids.get(0), null, 10, true);
+//		System.out.println("===========================");
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
 	}
 
 }

@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "userField")
-public class UserField {
+public class UserField implements BaseEntity<Long>{
 
 	public UserField() {
 	};
@@ -32,7 +32,7 @@ public class UserField {
 	@Column(name = "extends")
 	private String extendsInfo;
 	private Date createTime = new Date();
-	private Date modifyTime ;
+	private Date modifyTime = new Date();
 	private String avatar;
 	private String password;
 	private BindType socialBind = BindType.WEIBO;
@@ -188,9 +188,8 @@ public class UserField {
 		return modifyTime;
 	}
 
-	public UserField setModifyTime(Date modifyTime) {
+	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
-		return this;
 	}
 
 	public String getAvatar() {

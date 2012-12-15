@@ -19,7 +19,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "checkin")
-public class CheckIn {
+public class CheckIn implements BaseEntity<Integer>{
 	public CheckIn() {
 	};
 
@@ -38,6 +38,8 @@ public class CheckIn {
 	private String picUrl;
 	private String audioUrl;
 	private String location;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 
 	@OneToMany(mappedBy = "checkin", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private Set<Approve> approves = new HashSet<Approve>();
@@ -54,7 +56,7 @@ public class CheckIn {
 		
 			};
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -150,6 +152,22 @@ public class CheckIn {
 
 	public static Comparator<CheckIn> getDateComparator() {
 		return dateComparator;
+	}
+	@Override
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 	
 }

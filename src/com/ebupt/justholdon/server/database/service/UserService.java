@@ -12,14 +12,16 @@ public interface UserService extends GenericService<User,Long>{
 	public boolean isValideUser(Long uid,String password);
 	public boolean isFriend(Long uidA,Long uidB);
 	//use uid to find this user's friends
-	public List<User> findFriends(Long uid,Integer start,Integer end);
+	public List<User> findFriends(Long uid,Integer startId,Integer length,boolean after);
+	public List<User> findFriends(Long uid);
+
 	//find all users in this app
 	public List<User> findUsers(ComparatorType type);
 
-	public List<User> findUsers(ComparatorType type,Integer start,Integer end);
+	public List<User> findUsers(ComparatorType type,Integer startId,Integer length,boolean after);
 
 	/* search friends*/
 	public List<User> searchFriend(Long uid,String key);
 	/* search friends*/
-	public List<User> searchFriend(Long uid,String key,Integer start,Integer end);
+	public List<User> searchFriend(Long uid,String key,Integer startId,Integer length,boolean after);
 }

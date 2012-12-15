@@ -15,7 +15,7 @@ import com.ebupt.justholdon.server.database.dao.CommentDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
 import com.ebupt.justholdon.server.database.entity.Comment;
-import com.ebupt.justholdon.server.database.entity.EventType;
+import com.ebupt.justholdon.server.database.entity.GenericComparator;
 import com.ebupt.justholdon.server.database.entity.User;
 
 @Service("commentService")
@@ -87,21 +87,23 @@ public class CommentServiceImpl implements CommentService {
 				.setComment(comment);
 		if(null != date)
 			commentObj.setCreateTime(date);
+		System.out.println("time "+commentObj.getCreateTime());
 		return commentDao.save(commentObj);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Comment> getCommentsForCheckin(Integer checkInId) {
 		CheckIn checkIn = checkInDao.get(checkInId);
 		List<Comment> comments = new ArrayList<Comment>(checkIn.getComments());
-		Collections.sort(comments,Comment.getDateComparator());
+		Collections.sort(comments,GenericComparator.getInstance().getDateComparator());
 		return comments;
 	}
 
 	@Override
-	public List<Comment> getCommentsForCheckin(Integer checkInId,
-			Integer start, Integer end) {
-		return Utils.subList(start, end, getCommentsForCheckin(checkInId));
+	public List<Comment> getCommentsForCheckin(Integer checkInId,Integer startId,Integer length,boolean after){
+	//	return Utils.subList(start, end, getCommentsForCheckin(checkInId));
+		return Utils.cutEventList(getCommentsForCheckin(checkInId), startId, length, after);
 	}
 
 	@Override

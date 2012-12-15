@@ -146,7 +146,7 @@ public class HabitServiceImpl implements HabitService {
 		Set<UserHabit> userHabits = habit.getUserHabits();
 		Set<User> participaters = new HashSet<User>();
 		for (UserHabit userHabit : userHabits) {
-			if (userHabit.getStat() == HabitState.DELETED)
+			if (userHabit.getStat().equals(HabitState.DELETED))
 				continue;
 			participaters.add(userHabit.getUser());
 		}
@@ -177,15 +177,17 @@ public class HabitServiceImpl implements HabitService {
 	}
 
 	@Override
-	public List<Habit> findAll(boolean byHot, Integer start, Integer end) {
+	public List<Habit> findAll(boolean byHot, Integer startId, Integer length,boolean after) {
 		List<Habit> habits = findAll(byHot);
-		return Utils.subList(start, end, habits);
+		return Utils.cutEventList(habits, startId, length, after, true);
+		//return Utils.subList(start, end, habits);
 	}
 
 	@Override
-	public List<Habit> findAGroup(String groupName, Integer start, Integer end) {
+	public List<Habit> findAGroup(String groupName, Integer startId, Integer length,boolean after) {
 		 List<Habit> habits = findAGroup(groupName);
-		return Utils.subList(start, end, habits);
+	//	return Utils.subList(start, end, habits);
+		 return Utils.cutEventList(habits, startId, length, after,true);
 	}
 
 }

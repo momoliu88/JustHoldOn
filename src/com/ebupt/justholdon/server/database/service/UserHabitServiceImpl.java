@@ -2,6 +2,7 @@ package com.ebupt.justholdon.server.database.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.dao.UserHabitDao;
-import com.ebupt.justholdon.server.database.entity.EventType;
+import com.ebupt.justholdon.server.database.entity.GenericComparator;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
@@ -34,6 +35,8 @@ public class UserHabitServiceImpl implements UserHabitService {
 	private HabitDao habitDao;
 	@Autowired
 	private EventService eventService; 
+	@SuppressWarnings("rawtypes")
+	private Comparator comparator = GenericComparator.getInstance().getDateComparator();
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Override
@@ -89,7 +92,7 @@ public class UserHabitServiceImpl implements UserHabitService {
 			return false;
 		}
 
-		if (userHabit.getStat() == HabitState.DELETED)
+		if (userHabit.getStat().equals(HabitState.DELETED))
 			return false;
 		userHabit.setUser(user).setHabit(habit);
 
@@ -125,7 +128,7 @@ public class UserHabitServiceImpl implements UserHabitService {
 		Set<UserHabit> uHabits = user.getUserHabits();
 		UserHabit userHabit = null;
 		for (UserHabit uHabit : uHabits) {
-			if (uHabit.getHabit().getId() == hid) {
+			if (uHabit.getHabit().getId().equals(hid)) {
 				userHabit = uHabit;
 				break;
 			}
@@ -133,32 +136,42 @@ public class UserHabitServiceImpl implements UserHabitService {
 		return userHabit;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<UserHabit> getUserHabits(Long uid) {
 		User user = userDao.get(uid);
 		Set<UserHabit> userHabits = user.getUserHabits();
 		List<UserHabit> ret = new ArrayList<UserHabit>(userHabits);
-		Collections.sort(ret,UserHabit.getDateComparator());
+		Collections.sort(ret,comparator);
 		return ret;
 	}
 
 	@Override
-	public List<UserHabit> getUserHabits(Long uid, Integer startpos,
-			Integer endpos) {
-		return Utils.subList(startpos, endpos, getUserHabits(uid));
+	public List<UserHabit> getUserHabits(Long uid, Integer startId,
+			Integer length,boolean after) {
+	//	return Utils.subList(startpos, endpos, getUserHabits(uid));
+		return Utils.cutEventList(getUserHabits(uid), startId, length, after,true);
 	}
-
-	@Override
-	public List<UserHabit> getUserHabits(Long uid, Long beWatched) {
+	private boolean hasPrivilege(UserHabit habit,PrivilegeType type)
+	{
+		return (habit.getPrivilege().compareTo(type) <= 0);
+	}
+	private PrivilegeType getPrivilege(Long uid,Long beWatched){
 		boolean isFriend = userService.isFriend(uid, beWatched);
 		PrivilegeType privilege = PrivilegeType.ALL;
 		if(isFriend)
 			privilege = PrivilegeType.ONLY_FRIENDS;
+		return privilege;
+	}
+	@Override
+	public List<UserHabit> getUserHabits(Long uid, Long beWatched) {
+		
+		PrivilegeType privilege = getPrivilege(uid,beWatched);
 		List<UserHabit> hostHabits = getUserHabits(beWatched);
 		List<UserHabit> ret = new ArrayList<UserHabit>();
 		for(UserHabit hostHabit:hostHabits)
 		{
-			 if(hostHabit.getPrivilege().compareTo(privilege) <= 0)
+			 if(hasPrivilege(hostHabit,privilege))
 				 ret.add(hostHabit);
 		}
 		return ret;
@@ -166,8 +179,9 @@ public class UserHabitServiceImpl implements UserHabitService {
 
 	@Override
 	public List<UserHabit> getUserHabits(Long uid, Long beWatched,
-			Integer startpos, Integer endpos) {
-		return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched));
+			Integer startId, Integer length,boolean after) {
+	//	return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched));
+		return Utils.cutEventList(getUserHabits(uid,beWatched), startId, length, after, true);
 	}
 	private List<UserHabit> getUserHabits(List<UserHabit> userHabits,HabitState habitState)
 	{
@@ -186,8 +200,9 @@ public class UserHabitServiceImpl implements UserHabitService {
 
 	@Override
 	public List<UserHabit> getUserHabits(Long uid, HabitState habitState,
-			Integer startpos, Integer endpos) {
-		return Utils.subList(startpos, endpos, getUserHabits(uid,habitState));
+			Integer startId, Integer length,boolean after) {
+		//return Utils.subList(startpos, endpos, getUserHabits(uid,habitState));
+		return Utils.cutEventList(getUserHabits(uid,habitState), startId, length, after,true);
 	}
 
 	@Override
@@ -199,8 +214,9 @@ public class UserHabitServiceImpl implements UserHabitService {
 
 	@Override
 	public List<UserHabit> getUserHabits(Long uid, Long beWatched,
-			HabitState habitState, Integer startpos, Integer endpos) {
-		return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched,habitState));
+			HabitState habitState, Integer startId, Integer length,boolean after) {
+	//	return Utils.subList(startpos, endpos, getUserHabits(uid,beWatched,habitState));
+		return Utils.cutEventList(getUserHabits(uid,beWatched,habitState), startId, length, after, true);
 	}
 
 	@Override
@@ -218,7 +234,7 @@ public class UserHabitServiceImpl implements UserHabitService {
 	public UserHabit getUserHabit(Long uid, Long beWatched, Integer hid) {
 		List<UserHabit> userHabits = getUserHabits(uid,beWatched);
 		for(UserHabit userHabit:userHabits)
-			if(userHabit.getHabit().getId() == hid)
+			if(userHabit.getHabit().getId().equals(hid))
 				return userHabit;
 		return null;
 	}
@@ -239,6 +255,33 @@ public class UserHabitServiceImpl implements UserHabitService {
 		else if(state.equals(HabitState.DELETED))
 			eventService.createHabitEvent(uid, hid, EventType.QUIT_HABIT, content);
 
+	}
+
+	@Override
+	public boolean hasParticipateHabit(Long uid, Integer hid) {
+		String tbName = UserHabit.class.getName();
+		String hql  = "from "+tbName+" as uh where uh.user = ? and uh.habit = ?";
+		
+		@SuppressWarnings("unchecked")
+		List<UserHabit>userHabits = (List<UserHabit>) userHabitDao.find(hql, userDao.get(uid),habitDao.get(hid));
+		if(userHabits==null || userHabits.isEmpty())
+			return false;
+		return true;
+	}
+
+	@Override
+	public boolean hasPrivilegeToSee(Long uid, Long beWatched, Integer hid) {
+		if(beWatched.equals(uid))
+			return true;
+		PrivilegeType privilege = getPrivilege(uid,beWatched);
+		List<UserHabit> hostHabits = getUserHabits(beWatched);
+		for(UserHabit hostHabit:hostHabits)
+		{
+			 if((hostHabit.getHabit().getId().equals(hid)) 
+					 && hasPrivilege(hostHabit,privilege))
+				 return true;
+		}
+		return false;
 	}
 
 }

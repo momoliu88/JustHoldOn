@@ -16,6 +16,6 @@ public interface CommentService extends GenericService<Comment, Integer> {
 	public void deleteComment(Integer commentId);
 	/* get comment for a checkin*/
 	public List<Comment> getCommentsForCheckin(Integer checkInId);
-	public List<Comment> getCommentsForCheckin(Integer checkInId,Integer start,Integer end);
+	public List<Comment> getCommentsForCheckin(Integer checkInId,Integer startId,Integer length,boolean after);
 	
 }

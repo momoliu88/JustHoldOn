@@ -1,7 +1,8 @@
 package com.ebupt.justholdon.server.database.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
+//import java.util.Collections;
+//import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ebupt.justholdon.server.database.dao.SystemInfoDao;
 import com.ebupt.justholdon.server.database.dao.SystemInfoSendedDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
+//import com.ebupt.justholdon.server.database.entity.GenericComparator;
 import com.ebupt.justholdon.server.database.entity.SystemInfo;
 import com.ebupt.justholdon.server.database.entity.SystemInfoSended;
 import com.ebupt.justholdon.server.database.entity.User;
@@ -27,6 +29,8 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 	private UserDao userDao;
 	@Autowired
 	private SystemInfoSendedDao systemInfoSendedDao;
+//	@SuppressWarnings("rawtypes")
+//	private Comparator comparator = GenericComparator.getInstance().getDateComparator();
 	@Override
 	public Integer save(SystemInfo newInstance) {
 		return systemInfoDao.save(newInstance);
@@ -78,6 +82,7 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 		return systemInfoDao.save(systemInfo);
 	}
 
+	//@SuppressWarnings("unchecked")
 	@Override
 	public List<SystemInfo> getUnreadedSystemInfo(Long uid) {
 		User receiver = userDao.get(uid);
@@ -89,22 +94,24 @@ public class SystemInfoServiceImpl implements SystemInfoService {
 			hasReceivedInfos.add(info.getSystemInfo());
 		}
 		allSystemInfos.removeAll(hasReceivedInfos);
-		Collections.sort(allSystemInfos,SystemInfo.getDateComparator());
+	//	Collections.sort(allSystemInfos,comparator);
 		return allSystemInfos;
 	}
 
 	@Override
-	public List<SystemInfo> getUnreadedSystemInfo(Long uid, Integer start,
-			Integer end) {
-		return Utils.subList(start, end, getUnreadedSystemInfo(uid));
+	public List<SystemInfo> getUnreadedSystemInfo(Long uid, Integer startId,
+			Integer length,boolean after) {
+	//	return Utils.subList(start, end, getUnreadedSystemInfo(uid));
+		return Utils.cutEventList(getUnreadedSystemInfo(uid), startId, length, after);
 	}
 
 	@Override
-	public List<SystemInfo> getAllSystemInfo(Integer start,
-			Integer end) {
+	public List<SystemInfo> getAllSystemInfo(Integer startId,
+			Integer length,boolean after) {
 		List<SystemInfo> allSystemInfos = systemInfoDao.findAll();
-		Collections.sort(allSystemInfos,SystemInfo.getDateComparator());
-		return Utils.subList(start, end,allSystemInfos);
+	//	Collections.sort(allSystemInfos,comparator);
+		//return Utils.subList(start, end,allSystemInfos);
+		return Utils.cutEventList(allSystemInfos, startId, length, after);
 	}
 
 	@Override

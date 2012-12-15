@@ -15,7 +15,6 @@ import com.ebupt.justholdon.server.database.dao.CheckInDao;
 import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
-import com.ebupt.justholdon.server.database.entity.EventType;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.User;
 
@@ -72,15 +71,8 @@ public class CheckInServiceImpl implements CheckInService{
 	public Integer checkIn(Long uid, Integer hid) {
 		User user = userDao.get(uid);
 		Habit habit = habitDao.get(hid);
-//		if(user == null || habit == null) 
-//			return -1;
 		CheckIn checkIn = new CheckIn().setUser(user).setHabit(habit);
-//		user.getCheckIns().add(checkIn);
-//		habit.getCheckIns().add(checkIn);
- 		Integer id = checkInDao.save(checkIn);
-// 		userDao.update(user);
-// 		habitDao.update(habit);
- 		return id;
+ 		return checkInDao.save(checkIn);
 	}
 
 	@Override
@@ -98,7 +90,7 @@ public class CheckInServiceImpl implements CheckInService{
 		Set<CheckIn> checkIns = user.getCheckIns();
 		List<CheckIn> results = new ArrayList<CheckIn>();
 		for(CheckIn checkIn: checkIns)
-			if(checkIn.getHabit().getId() == hid)
+			if(checkIn.getHabit().getId().equals(hid))
 				results.add(checkIn);
 		Collections.sort(results,CheckIn.getDateComparator());
 		return results;
@@ -111,9 +103,8 @@ public class CheckInServiceImpl implements CheckInService{
 	}
 
 	@Override
-	public List<CheckIn> getCheckIns(Long uid, Integer hid, Integer start,
-			Integer end) {
-		return Utils.subList(start, end, getCheckIns(uid,hid));
+	public List<CheckIn> getCheckIns(Long uid, Integer hid, Integer startId,Integer length,boolean after){
+		return Utils.cutEventList(getCheckIns(uid,hid), startId, length, after,true);
 	}
 
 	@Override
@@ -124,25 +115,15 @@ public class CheckInServiceImpl implements CheckInService{
 	@Override
 	public List<CheckIn> getCheckInInTimeRange(Long uid, Integer hid, Date start, Date end) {
 		List<CheckIn> checkIns = getCheckIns(uid,hid);
-//		System.out.println("checkins "+checkIns.size());
-		List<CheckIn> inRange = new ArrayList<CheckIn>();
-		//Collections.sort(checkIns,CheckIn.getDateComparator());
-
+ 		List<CheckIn> inRange = new ArrayList<CheckIn>();
+ 
 		for(CheckIn checkIn: checkIns)
 		{
-//			System.out.println("#checkin "+checkIn.getCheckInTime());
-			if(checkIn.getCheckInTime().getTime() > end.getTime())
-			{
-				
-//				System.out.println("continue");
-				continue;
-			}
+ 			if(checkIn.getCheckInTime().getTime() > end.getTime())
+ 				continue;
+			 
 			if(checkIn.getCheckInTime().getTime() < start.getTime())
-			{
-				//				System.out.println("break");
 				break;
-			}
-//			System.out.println("add");
 			inRange.add(checkIn);
 		}
 		return inRange;
@@ -150,8 +131,8 @@ public class CheckInServiceImpl implements CheckInService{
 
 	@Override
 	public List<CheckIn> getCheckInInTimeRange(Long uid, Integer hid, Date start,
-			Date end, Integer startpos, Integer endpos) {
-		return Utils.subList(startpos, endpos, getCheckInInTimeRange(uid,hid,start,end));
+			Date end,Integer startId,Integer length,boolean after) {
+		return Utils.cutEventList(getCheckInInTimeRange(uid,hid,start,end), startId, length, after,true);
 	}
 
 	@Override
@@ -165,13 +146,15 @@ public class CheckInServiceImpl implements CheckInService{
 	}
 
 	@Override
-	public void checkInAndCreateEvent(Long uid, Integer hid, String content) {
-		checkIn(uid,hid);
-		eventService.createHabitEvent(uid, hid, EventType.SOMEBODY_CHECKIN, content);
+	public Integer checkInAndCreateEvent(Long uid, Integer hid, String content) {
+		Integer id = checkIn(uid,hid);
+		eventService.createHabitEvent(uid, hid, id,EventType.SOMEBODY_CHECKIN, content);
+		return id;
 	}
 	@Override
-	public void checkInAndCreateEvent(Long uid,Integer hid,CheckIn checkIn, String content) {
-		checkIn(uid,hid,checkIn);
-		eventService.createHabitEvent(uid,hid, EventType.SOMEBODY_CHECKIN, content);
+	public Integer checkInAndCreateEvent(Long uid,Integer hid,CheckIn checkIn, String content) {
+		Integer id = checkIn(uid,hid,checkIn);
+		eventService.createHabitEvent(uid,hid, id,EventType.SOMEBODY_CHECKIN, content);
+		return id;
 	}
 }

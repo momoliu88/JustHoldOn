@@ -90,12 +90,7 @@ public class CommentServiceImplTest {
 		assertEquals(2,checkInService.get(cids.get(0)).getComments().size());
 	}
 
-//	@Test
-//	public void testCreateCommentLongLongIntegerDateString() {
-//		fail("Not yet implemented");
-//	}
-//
-	@Test
+ 	@Test
 	public void testGetCommentsForCheckinInteger() {
 		commentIds.add(	commentService.createComment(uids.get(1), null, cids.get(0), "hello"));
 		commentIds.add(commentService.createComment(uids.get(0), uids.get(1), cids.get(0), "ok reply"));
@@ -103,12 +98,8 @@ public class CommentServiceImplTest {
 		List<Comment> comments = commentService.getCommentsForCheckin(cids.get(0));
 		assertEquals(3,comments.size());
 		for(Comment comment:comments)
-			System.out.println("#"+comment.getSponsor().getId());
+			System.out.println("#"+comment.getId()+" "+comment.getSponsor().getId()+" "+comment.getCreateTime());
 	}
-//
-//	@Test
-//	public void testGetCommentsForCheckinIntegerIntegerInteger() {
-//		fail("Not yet implemented");
-//	}
+ 
 
 }

@@ -1,6 +1,6 @@
 package com.ebupt.justholdon.server.database.entity;
 
-import java.util.Comparator;
+//import java.util.Comparator;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -11,9 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.ebupt.justholdon.server.database.service.EventType;
+
 @Entity
 @Table(name = "events")
-public class Event {
+public class Event implements BaseEntity<Integer>{
 	public Event() {
 	};
 
@@ -36,27 +38,28 @@ public class Event {
 	private String content;
 	private MessageFlag flag = MessageFlag.JUST_EVENT;
 	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 	private Boolean isSystemInfo = false;
 
-	private static Comparator<Event> dateComparator = new Comparator<Event>() {
+//	private static Comparator<Event> dateComparator = new Comparator<Event>() {
+//
+//		@Override
+//		public int compare(Event arg0, Event arg1) {
+//			return (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime()
+//					.getTime());
+//		}
+//
+//	};
+//	private static Comparator<Event> idComparator = new Comparator<Event>() {
+//
+//		@Override
+//		public int compare(Event arg0, Event arg1) {
+//			return arg1.getId() - arg0.getId();
+//		}
+//
+//	};
 
-		@Override
-		public int compare(Event arg0, Event arg1) {
-			return (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime()
-					.getTime());
-		}
-
-	};
-	private static Comparator<Event> idComparator = new Comparator<Event>() {
-
-		@Override
-		public int compare(Event arg0, Event arg1) {
-			return arg1.getId() - arg0.getId();
-		}
-
-	};
-
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -139,7 +142,7 @@ public class Event {
 		this.flag = flag;
 		return this;
 	}
-
+	@Override
 	public Date getCreateTime() {
 		return createTime;
 	}
@@ -157,12 +160,20 @@ public class Event {
 		this.isSystemInfo = isSystemInfo;
 	}
 
-	public static Comparator<Event> getDateComparator() {
-		return dateComparator;
+//	public static Comparator<Event> getDateComparator() {
+//		return dateComparator;
+//	}
+//
+//	public static Comparator<Event> getIdComparator() {
+//		return idComparator;
+//	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
 	}
-
-	public static Comparator<Event> getIdComparator() {
-		return idComparator;
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 }

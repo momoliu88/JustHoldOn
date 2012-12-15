@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements BaseEntity<Long>{
 	public User() {
 	};
 
@@ -41,7 +41,8 @@ public class User {
 	private String avatar;
 
 	private BindType socialBind = BindType.WEIBO;
-	private Date createTime;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 	private String deviceToken;
 	private String token;
 	
@@ -311,6 +312,14 @@ public class User {
 	public User setReceiverComments(Set<Comment> receiverComments) {
 		this.receiverComments = receiverComments;
 		return this;
+	}
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 
 	public boolean equals(Object obj) {

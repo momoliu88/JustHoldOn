@@ -18,14 +18,15 @@ public interface UserHabitService extends GenericService<UserHabit,Integer>{
 	public UserHabit getUserHabit(Long uid,Long beWatched,Integer hid);
 
 	public List<UserHabit> getUserHabits(Long uid);
-	public List<UserHabit> getUserHabits(Long uid,Integer startpos,Integer endpos);
+	public List<UserHabit> getUserHabits(Long uid,Integer startId,Integer length,boolean after);
 	public List<UserHabit> getUserHabits(Long uid,HabitState habitState);
-	public List<UserHabit> getUserHabits(Long uid,HabitState habitState,Integer startpos,Integer endpos);
+	public List<UserHabit> getUserHabits(Long uid,HabitState habitState,Integer startId,Integer length,boolean after);
 	
+	public boolean hasPrivilegeToSee(Long uid,Long beWatched,Integer hid);
 	public List<UserHabit> getUserHabits(Long uid,Long beWatched);
 	public List<UserHabit> getUserHabits(Long uid,Long beWatched,HabitState habitState);
-	public List<UserHabit> getUserHabits(Long uid,Long beWatched,Integer startpos,Integer endpos);
-	public List<UserHabit> getUserHabits(Long uid,Long beWatched,HabitState habitState,Integer startpos,Integer endpos);
-
-
+	public List<UserHabit> getUserHabits(Long uid,Long beWatched,Integer startId,Integer length,boolean after);
+	public List<UserHabit> getUserHabits(Long uid,Long beWatched,HabitState habitState,Integer startId,Integer length,boolean after);
+	
+	public boolean hasParticipateHabit(Long uid,Integer hid);
 }

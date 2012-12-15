@@ -12,7 +12,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "approves")
-public class Approve {
+public class Approve implements BaseEntity<Integer> {
 	public Approve() {
 	};
 
@@ -25,9 +25,10 @@ public class Approve {
 	@ManyToOne
 	@JoinColumn(name = "checkin", nullable = false)
 	private CheckIn checkin;
-	private Date createTime;
+	private Date createTime = new Date();
+	private Date modifyTime = new Date();
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
@@ -57,5 +58,15 @@ public class Approve {
 
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+
+	@Override
+	public Date getModifyTime() {
+		return modifyTime;
+	}
+
+	@Override
+	public void setModifyTime(Date modifyTime) {
+		this.modifyTime = modifyTime;
 	}
 }
