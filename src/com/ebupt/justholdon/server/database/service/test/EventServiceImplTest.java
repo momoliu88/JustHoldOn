@@ -14,7 +14,6 @@ import org.springframework.context.support.FileSystemXmlApplicationContext;
 import com.ebupt.justholdon.server.database.entity.Event;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.HabitType;
-import com.ebupt.justholdon.server.database.entity.MessageFlag;
 import com.ebupt.justholdon.server.database.entity.PersistUnit;
 import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
@@ -24,6 +23,7 @@ import com.ebupt.justholdon.server.database.service.CommentService;
 import com.ebupt.justholdon.server.database.service.EventService;
 import com.ebupt.justholdon.server.database.service.EventType;
 import com.ebupt.justholdon.server.database.service.HabitService;
+import com.ebupt.justholdon.server.database.service.MessageFlag;
 import com.ebupt.justholdon.server.database.service.UserHabitService;
 import com.ebupt.justholdon.server.database.service.UserService;
 
@@ -53,31 +53,30 @@ public class EventServiceImplTest {
 			Habit habit = new Habit().setHabitName(name)
 					.setUnit(PersistUnit.DAY).setGroupName("groupName1")
 					.setType(HabitType.SYSTEM).setStages("{1,2,3}");
-//			hids.add(habitService.save(habit));
+			hids.add(habitService.save(habit));
 			
 		}
 		for(int i = 0 ;i < 5;i++)
 		{
 			Long counter = 700L+i;
 			User user = new User("user1", "password", "avatar", counter, "device");
-//			uids.add(userService.save(user));
+			uids.add(userService.save(user));
 		}
 		UserHabit uHid = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
 		UserHabit uHid1 = new UserHabit().setPrivilege(PrivilegeType.ALL);
 		UserHabit uHid2 = new UserHabit().setPrivilege(PrivilegeType.MYSELF);
 		UserHabit uHid3 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
 
-//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(0), uHid, "content"); 
-//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(1), uHid1, "content"); 
-//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(2), uHid2, "content"); 
-//		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(3), uHid3, "content"); 
-//		UserHabit uHid4 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
-//		UserHabit uHid5 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
-//
-//		userHabitService.connectUserHabitAndCreateEvent(uids.get(1), hids.get(0), uHid4, "content"); 
-//		userHabitService.connectUserHabitAndCreateEvent(uids.get(3), hids.get(0), uHid5, "content"); 
-		
-//		 
+		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(0), uHid, "content"); 
+		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(1), uHid1, "content"); 
+		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(2), uHid2, "content"); 
+		userHabitService.connectUserHabitAndCreateEvent(uids.get(0), hids.get(3), uHid3, "content"); 
+		UserHabit uHid4 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
+		UserHabit uHid5 = new UserHabit().setPrivilege(PrivilegeType.ONLY_FRIENDS);
+
+		userHabitService.connectUserHabitAndCreateEvent(uids.get(1), hids.get(0), uHid4, "content"); 
+		userHabitService.connectUserHabitAndCreateEvent(uids.get(3), hids.get(0), uHid5, "content"); 
+			 
 	}
 
 	@Before
@@ -181,10 +180,10 @@ public class EventServiceImplTest {
 //			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
 //		}
 //	}
-	@Test
-	public void testgetRelevantEventFromIdLongBeWatched()
-	{
-		List<Event> events ;
+//	@Test
+//	public void testgetRelevantEventFromIdLongBeWatched()
+//	{
+//		List<Event> events ;
 //		events=eventService.getRelevantEventFromId(uids.get(1),uids.get(0), null, 10, false);
 //		System.out.println("===========================");
 //		for(Event event:events)
@@ -194,13 +193,13 @@ public class EventServiceImplTest {
 //		userService.beFriend(uids.get(0), uids.get(2));
 //		userService.beFriend(uids.get(1), uids.get(2));
 //		userService.beFriend(uids.get(0), uids.get(1));
-
-		events =eventService.getRelevantEventFromId(701l,700L, 224, 10, true);
-		System.out.println("=============223 false==============");
-		for(Event event:events)
-		{
-			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
-		}
+//
+//		events =eventService.getRelevantEventFromId(701l,700L, 224, 10, true);
+//		System.out.println("=============223 false==============");
+//		for(Event event:events)
+//		{
+//			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
+//		}
 //		events = eventService.getAllFriendsRelevantEventFromId(uids.get(2), null, 10, true);
 //		System.out.println("===========================");
 //		for(Event event:events)
@@ -220,6 +219,15 @@ public class EventServiceImplTest {
 //		{
 //			System.out.println("#id:"+event.getId()+" type:"+event.getType().toString()+" flag"+event.getFlag());
 //		}
+//	}
+	@Test
+	public void testcreateRemindInfo()
+	{
+		UserHabit uH = userHabitService.getUserHabit(uids.get(0), hids.get(0));
+		Integer receiverHabitId = uH.getId();
+		eventService.createRemindInfo(uids.get(1), receiverHabitId, "hi "+uH.getUser().getId()+" it's time to getup");
+		List<Event> events = eventService.getUnreadInformation(uids.get(0), null, 10, true);
+		for(Event event:events)
+			System.out.println("# "+event.getContent());
 	}
-
 }

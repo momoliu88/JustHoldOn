@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ebupt.justholdon.server.database.service.EventType;
+import com.ebupt.justholdon.server.database.service.MessageFlag;
 
 @Entity
 @Table(name = "events")

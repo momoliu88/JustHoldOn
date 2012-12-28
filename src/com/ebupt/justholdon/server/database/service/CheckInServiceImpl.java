@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ebupt.justholdon.server.database.dao.CheckInDao;
 import com.ebupt.justholdon.server.database.dao.HabitDao;
 import com.ebupt.justholdon.server.database.dao.UserDao;
+import com.ebupt.justholdon.server.database.entity.Approve;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
+import com.ebupt.justholdon.server.database.entity.Comment;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.User;
 
@@ -29,6 +31,8 @@ public class CheckInServiceImpl implements CheckInService{
 	private HabitDao habitDao;
 	@Autowired
 	private EventService eventService;
+	@Autowired
+	private UserHabitService userHabitServic;
 	
 //	private Logger logger = Logger.getLogger(this.getClass());
 	@Override
@@ -54,12 +58,7 @@ public class CheckInServiceImpl implements CheckInService{
 
 	@Override
 	public void delete(Integer id) {
-		CheckIn checkIn = checkInDao.get(id);
-		checkIn.getUser().getCheckIns().remove(checkIn);
-		checkIn.getHabit().getCheckIns().remove(checkIn);
-		checkIn.setUser(null);
-		checkIn.setHabit(null);
-		checkInDao.delete(checkIn);
+		deleteCheckIn(id);
 	}
 
 	@Override
@@ -140,6 +139,21 @@ public class CheckInServiceImpl implements CheckInService{
 		CheckIn checkIn  = checkInDao.get(cid);
 		checkIn.getUser().getCheckIns().remove(checkIn);
 		checkIn.getHabit().getCheckIns().remove(checkIn);
+		
+		Set<Comment> comments = checkIn.getComments();
+		Set<Approve> approves = checkIn.getApproves();
+		for(Comment comment:comments)
+		{
+			comment.getSponsor().getSponsorComments().remove(comment);
+			comment.getReceiver().getReceiverComments().remove(comment);
+			comment.setSponsor(null);
+			comment.setReceiver(null);
+		}
+		for(Approve approve:approves)
+		{
+			approve.getUser().getApproves().remove(approve);
+			approve.setUser(null);
+		}
 		checkIn.setUser(null);
 		checkIn.setHabit(null);
 		checkInDao.delete(checkIn);
@@ -156,5 +170,25 @@ public class CheckInServiceImpl implements CheckInService{
 		Integer id = checkIn(uid,hid,checkIn);
 		eventService.createHabitEvent(uid,hid, id,EventType.SOMEBODY_CHECKIN, content);
 		return id;
+	}
+
+	@Override
+	public List<CheckIn> getCheckIns(Long uid, Long beWatched, Integer hid) {
+		List<CheckIn> cks = getCheckIns(beWatched,hid);
+		List<CheckIn> result = new ArrayList<CheckIn>();
+		for(CheckIn ck:cks)
+		{
+			if(userHabitServic.hasPrivilegeToSee(uid, beWatched, ck.getHabit().getId()))
+			{
+				result.add(ck);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<CheckIn> getCheckIns(Long uid, Long beWatched, Integer hid,
+			Integer startId, Integer length, boolean after) {
+		return Utils.cutEventList(getCheckIns(uid,beWatched,hid), startId, length, after, true);
 	}
 }

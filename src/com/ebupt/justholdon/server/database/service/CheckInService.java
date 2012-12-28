@@ -17,6 +17,8 @@ public interface CheckInService extends GenericService<CheckIn,Integer> {
 	public void deleteCheckIn(Integer cid);
 	
 	public List<CheckIn> getCheckIns(Long uid,Integer hid);
+	public List<CheckIn> getCheckIns(Long uid,Long bewatched,Integer hid);
+	public List<CheckIn> getCheckIns(Long uid,Long beWatched,Integer hid,Integer startId,Integer length,boolean after);
 	//get checkins 
 	public List<CheckIn> getCheckIns(Long uid,Integer hid,Integer startId,Integer length,boolean after);
 	public int getCheckInNum(Long uid,Integer hid);

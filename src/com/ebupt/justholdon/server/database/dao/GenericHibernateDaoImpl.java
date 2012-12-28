@@ -1,6 +1,7 @@
 package com.ebupt.justholdon.server.database.dao;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -13,8 +14,10 @@ import org.hibernate.criterion.Criterion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ebupt.justholdon.server.database.entity.BaseEntity;
+
 @Transactional
-public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
+public class GenericHibernateDaoImpl<T extends BaseEntity<?>, PK extends Serializable> implements
 		GenericHibernateDao<T, PK> {
 
 	@Autowired
@@ -43,6 +46,7 @@ public class GenericHibernateDaoImpl<T, PK extends Serializable> implements
 
 	@Override
 	public void update(T transientObject) {
+		transientObject.setModifyTime(new Date());
 		currentSession().update(transientObject);
 	}
 

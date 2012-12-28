@@ -16,8 +16,8 @@ import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.Event;
 import com.ebupt.justholdon.server.database.entity.GenericComparator;
 import com.ebupt.justholdon.server.database.entity.Habit;
-import com.ebupt.justholdon.server.database.entity.MessageFlag;
 import com.ebupt.justholdon.server.database.entity.User;
+import com.ebupt.justholdon.server.database.entity.UserHabit;
 
 @Service("eventService")
 @Transactional
@@ -122,7 +122,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public Integer createHabitInfo(Long sponsorId, Long receiverId,
-			Integer habitId, EventType type, String content, Integer relatioId) {
+			Integer habitId, EventType type, String content, Integer relationId) {
 		if (null == type)
 			throw new java.lang.NullPointerException(
 					"event type or message flag can't be NULL!");
@@ -134,9 +134,14 @@ public class EventServiceImpl implements EventService {
 			receiver = userDao.get(receiverId);
 		Habit habit = habitDao.get(habitId);
 
-		Event event = new Event().setContent(content)
-				.setFlag(MessageFlag.UNREADED).setSponsor(sponsor)
-				.setReceiver(receiver).setType(type).setHabit(habit);
+		Event event = new Event()
+							.setContent(content)
+							.setFlag(MessageFlag.UNREADED)
+							.setSponsor(sponsor)
+							.setReceiver(receiver)
+							.setType(type)
+							.setHabit(habit)
+							.setRelationId(relationId);
 		return eventDao.save(event);
 	}
 
@@ -168,10 +173,13 @@ public class EventServiceImpl implements EventService {
 		event.setFlag(MessageFlag.READED);
 		eventDao.update(event);
 	}
-
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<Event> getUnreadInformation(Long uid) {
+	public List<Event> getUnreadInformation(Long uid,Integer startId,Integer length,boolean after)
+	{
+		return Utils.cutEventList(getUnreadInformation(uid), startId, length, after, true);
+	}
+	@SuppressWarnings("unchecked")
+	private List<Event> getUnreadInformation(Long uid) {
 		User user = userDao.get(uid);
 		Set<Event> events = user.getReceiverEvent();
 		List<Event> results = new ArrayList<Event>();
@@ -264,19 +272,28 @@ public class EventServiceImpl implements EventService {
 			events.addAll(getRelevantEvent(uid,user.getId()));
 		return Utils.cutEventList(events,startId,length,after);
 	}
-
-	@Override
-	public List<Event> getAHabitEvents(Long uid,Integer hid, Integer startId,
-			Integer length, boolean after) {
+	@SuppressWarnings("unchecked")
+	private List<Event> getAHabitEvents(Integer hid)
+	{
 		String tbName = Event.class.getName();
 		Habit habit = habitDao.get(hid);
 		
-		String hql = new StringBuilder().append("from ").append(tbName).append(" as event").append(" where event.habit = ?").toString();
-		@SuppressWarnings("unchecked")
-		List<Event> events = (List<Event>) eventDao.find(hql, habit);
-		System.out.println("size "+events.size());
-		List<Event> ret = getPrivilegeEvents(events,uid);
-		System.out.println("get privilege size "+ret.size());
+		String hql = new StringBuilder().append("from ").append(tbName).append(" as event").append(" where event.habit = ? and event.flag =?").toString();
+ 		return (List<Event>) eventDao.find(hql, habit,MessageFlag.JUST_EVENT);
+ 	}
+	@Override
+	public List<Event> getAHabitEvents(Long uid,Integer hid, Integer startId,
+			Integer length, boolean after) {
+//		String tbName = Event.class.getName();
+//		Habit habit = habitDao.get(hid);
+//		
+//		String hql = new StringBuilder().append("from ").append(tbName).append(" as event").append(" where event.habit = ?").toString();
+//		@SuppressWarnings("unchecked")
+//		List<Event> events = (List<Event>) eventDao.find(hql, habit);
+//		System.out.println("size "+events.size());
+//		List<Event> ret = getPrivilegeEvents(events,uid);
+//		System.out.println("get privilege size "+ret.size());
+		List<Event> ret = getPrivilegeEvents(getAHabitEvents(hid),uid);
 		return Utils.cutEventList(ret,startId,length,after);
 	}
 
@@ -285,11 +302,52 @@ public class EventServiceImpl implements EventService {
 			Integer hid, Integer startId, Integer length, boolean after) {
 		String tbName = Event.class.getName();
 		Habit habit = habitDao.get(hid);
-		String hql = new StringBuilder().append("from ").append(tbName).append(" as event ").append(" where event.habit = ? and event.sponsor = ?").toString();
+		String hql = new StringBuilder().append("from ").append(tbName).append(" as event ").append(" where event.habit = ? and event.sponsor = ? and event.flag = ?").toString();
 		@SuppressWarnings("unchecked")
-		List<Event> events = (List<Event>) eventDao.find(hql, habit,userDao.get(beWatched));
+		List<Event> events = (List<Event>) eventDao.find(hql, habit,userDao.get(beWatched),MessageFlag.JUST_EVENT);
 		List<Event> ret = getPrivilegeEvents(events,uid);
 		return Utils.cutEventList(ret,startId,length,after);
+	}
+
+	@Override
+	public void readAllUnreadInformations(Long uid) {
+		List<Event> events = getUnreadInformation(uid);
+		for(Event event:events)
+			readAInformation(event.getId());
+	}
+
+	@Override
+	public List<Event> getFriendsEventsInHabit(Long uid, Integer hid,
+			Integer startId, Integer length, boolean after) {
+		List<Event> events = getAHabitEvents(hid);
+		List<Event> ret = new ArrayList<Event>();
+		for(Event event:events)
+			if(userService.isFriend(event.getSponsor().getId(),uid))
+				ret.add(event);
+ 		return ret;
+	}
+
+	@Override
+	public Integer createRemindInfo(Long sponsorId, Integer receiverHabitId,String content) {
+		UserHabit uH = userHabitService.get(receiverHabitId);
+		if(null != uH)
+			return createHabitInfo(sponsorId, uH.getUser().getId(), uH.getHabit().getId(),EventType.REMAIND_SOMEBODY, content, null);
+		return null;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Event> getAllInformation(Long uid, Integer startId,
+			Integer length, boolean after) {
+		User user = userDao.get(uid);
+		Set<Event> events = user.getReceiverEvent();
+		List<Event> results = new ArrayList<Event>();
+		for (Event event : events) {
+			if (event.getFlag().equals(MessageFlag.UNREADED) || event.getFlag().equals(MessageFlag.READED))
+				results.add(event);
+		}
+		Collections.sort(results,GenericComparator.getInstance().getDateComparator());
+		return Utils.cutEventList(results, startId, length, after, true);	
 	}
 
 

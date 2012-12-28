@@ -174,6 +174,8 @@ public class UserServiceImpl implements UserService {
 //	}
 	@Override
 	public boolean isFriend(Long uidA, Long uidB) {
+		if(uidA.equals(uidB))
+			return false;
 		User userA = userDao.get(uidA);
 		User userB = userDao.get(uidB);
 		return userA.getFriends().contains(userB);

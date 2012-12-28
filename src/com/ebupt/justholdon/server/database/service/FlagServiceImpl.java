@@ -163,13 +163,13 @@ public class FlagServiceImpl implements FlagService {
 	}
 
 	@Override
-	public List<Flag> findAll(boolean byHot, Integer start, Integer end) {
+	public List<Flag> findAll(boolean byHot, Integer startId,Integer length,boolean after) {
 		List<Flag> flags = findAll(byHot);
 //		for (Flag flag : flags)
 //			System.out.println(flag.getContent());
 //		System.out.println(start + " => " + end + "[0]" + flags.get(0));
 		
-		return Utils.subList(start, end, flags);
+		return Utils.cutEventList(flags, startId, length, after, true);
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class FlagServiceImpl implements FlagService {
 			return null;
 		Collections.sort(flags, Flag.getHotComparator());
 		//return Utils.subList(start, end, flags);
-		return Utils.cutEventList(flags, startId, length, after);
+		return Utils.cutEventList(flags, startId, length, after,true);
 	}
 
 	@Override
@@ -216,6 +216,12 @@ public class FlagServiceImpl implements FlagService {
 			Integer length,boolean after) {
 		List<Habit> habits = findHabits(flagIds);
 		//return Utils.subList(start, end, habits);
-		return Utils.cutEventList(habits, startId, length, after);
+		return Utils.cutEventList(habits, startId, length, after,true);
+	}
+
+	@Override
+	public Boolean hasFlags(Long uid) {
+		User user = userDao.get(uid);
+		return !user.getFlags().isEmpty();
 	}
 }

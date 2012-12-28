@@ -40,24 +40,31 @@ public class Approve implements BaseEntity<Integer> {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public Approve setUser(User user) {
 		this.user = user;
+		if(null != user)
+			user.getApproves().add(this);
+		return this;
 	}
 
 	public CheckIn getCheckin() {
 		return checkin;
 	}
 
-	public void setCheckin(CheckIn checkin) {
+	public Approve setCheckin(CheckIn checkin) {
 		this.checkin = checkin;
+		if(null != checkin)
+			checkin.getApproves().add(this);
+		return this;
 	}
 
 	public Date getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(Date createTime) {
+	public Approve setCreateTime(Date createTime) {
 		this.createTime = createTime;
+		return this;
 	}
 
 	@Override

@@ -113,19 +113,27 @@ public class CommentServiceImpl implements CommentService {
 
 	@Override
 	public void createCommentAndCreateInformation(Long sponsor,
-			Long receiver, Integer checkInId, String comment, String content) {
-		Integer commentId = createComment(sponsor,receiver,checkInId,comment);
-		Integer hid = checkInDao.get(checkInId).getHabit().getId();
-		eventService.createHabitInfo(sponsor, receiver, hid, EventType.COMMENT_CHECKIN, content, commentId);
+			Long receiverId, Integer checkInId, String comment, String content) {
+		createComment(sponsor,receiverId,checkInId,comment);
+		CheckIn ck =checkInDao.get(checkInId); 
+		Integer hid = ck.getHabit().getId();
+		eventService.createHabitInfo(sponsor,ck.getUser().getId(), hid, EventType.COMMENT_CHECKIN, content, checkInId);
+ 		if(null != receiverId)
+ 			eventService.createHabitInfo(sponsor,receiverId, hid, EventType.REPLY, content, checkInId);
+
 	}
 
 	@Override
 	public void createCommentAndCreateInformation(Long sponsor,
 			Long receiver, Integer checkInId, Date date, String comment,
 			String content) {
-		Integer commentId = createComment(sponsor,receiver,checkInId,date,comment);
-		Integer hid = checkInDao.get(checkInId).getHabit().getId();
-		eventService.createHabitInfo(sponsor, receiver, hid, EventType.COMMENT_CHECKIN, content, commentId);
+		createComment(sponsor,receiver,checkInId,date,comment);
+		CheckIn ck =checkInDao.get(checkInId); 
+		Integer hid =  ck.getHabit().getId();
+		eventService.createHabitInfo(sponsor, ck.getUser().getId(), hid, EventType.COMMENT_CHECKIN, content, checkInId);
+		if(null != receiver)
+ 			eventService.createHabitInfo(sponsor,receiver, hid, EventType.REPLY, content, checkInId);
+
 	}
 
 }

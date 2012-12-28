@@ -20,7 +20,9 @@ import com.ebupt.justholdon.server.database.entity.PersistUnit;
 import com.ebupt.justholdon.server.database.entity.PrivilegeType;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserHabit;
+import com.ebupt.justholdon.server.database.service.ApproveService;
 import com.ebupt.justholdon.server.database.service.CheckInService;
+import com.ebupt.justholdon.server.database.service.CommentService;
 import com.ebupt.justholdon.server.database.service.EventService;
 import com.ebupt.justholdon.server.database.service.HabitService;
 import com.ebupt.justholdon.server.database.service.UserHabitService;
@@ -32,6 +34,8 @@ public class CheckInServiceImplTest {
 	static UserHabitService userHabitService;
 	static CheckInService checkInService;
 	static EventService eventService;
+	static CommentService commentService;
+	static ApproveService approveService;
 	static List<Integer> hids = new ArrayList<Integer>();
 	static List<Long> uids = new ArrayList<Long>();
 	static List<Integer> cids = new ArrayList<Integer>();
@@ -42,6 +46,9 @@ public class CheckInServiceImplTest {
 		eventService = (EventService) ctx.getBean("eventService");
 		userHabitService = (UserHabitService) ctx.getBean("userHabitService");
 		checkInService = (CheckInService) ctx.getBean("checkInService");
+		commentService = (CommentService) ctx.getBean("commentService");
+		approveService = (ApproveService) ctx.getBean("approveService");
+
 		Habit habit = new Habit().setHabitName("name1").setUnit(PersistUnit.DAY)
 				.setGroupName("groupName1").setType(HabitType.SYSTEM)
 				.setStages("{1,2,3}");
@@ -49,11 +56,14 @@ public class CheckInServiceImplTest {
 				.setGroupName("groupName1").setType(HabitType.SYSTEM)
 				.setStages("{1,2,3}");
 		User user1 = new User("user1", "password", "avatar", 787L, "device");
+		User user2 = new User("user1", "password", "avatar", 788L, "device");
+
 		hids.add(habitService.save(habit));
 		hids.add(habitService.save(habit1));
 
 		uids.add(userService.save(user1));
-		
+		uids.add(userService.save(user2));
+
 		UserHabit uHid = new UserHabit().setPrivilege(PrivilegeType.ALL);
 		UserHabit uHid2 = new UserHabit().setPrivilege(PrivilegeType.ALL);
 		userHabitService.connectUserHabit(uids.get(0), hids.get(1), uHid2);
@@ -163,8 +173,19 @@ public class CheckInServiceImplTest {
 	}
 
 	@Test
-	public void testGetCheckInInTimeRangeLongIntegerDateDate() {
-		
+	public void testDeleteCheckIn() {
+		//ck
+		cids.add(checkInService.checkIn(uids.get(0), hids.get(0)));
+		approveService.approveCheckIn(uids.get(1), cids.get(0));
+		commentService.createComment(uids.get(1), uids.get(0), cids.get(0), "comments"); 
+		assertEquals(1,approveService.findAll().size());
+		assertEquals(1,commentService.findAll().size());
+		checkInService.deleteCheckIn(cids.get(0));
+		assertEquals(0,approveService.findAll().size());
+		assertEquals(0,commentService.findAll().size());
+		User user = userService.get(uids.get(1));
+		System.out.println(user.getSponsorComments().size());
+		cids.clear();
 	}
  
 	@Test
