@@ -1,20 +1,22 @@
 package com.ebupt.justholdon.server.database.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+//import java.util.ArrayList;
+//import java.util.Collections;
+//import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+//import java.util.Set;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ebupt.justholdon.server.database.dao.UserDao;
+//import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.dao.WeeklySummaryDao;
-import com.ebupt.justholdon.server.database.entity.GenericComparator;
+//import com.ebupt.justholdon.server.database.entity.GenericComparator;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.WeeklySummary;
 
@@ -24,9 +26,9 @@ public class WeeklySummaryServiceImpl implements WeeklySummaryService {
 	@Autowired
 	private WeeklySummaryDao weeklySummaryDao;
 	@Autowired
-	private UserDao userDao;
-	@SuppressWarnings("rawtypes")
-	private Comparator comparator = GenericComparator.getInstance().getDateComparator();
+	private UserService userService;
+//	@SuppressWarnings("unchecked")
+//	private Comparator comparator = GenericComparator.getInstance().getDateComparator();
 	@Override
 	public Integer save(WeeklySummary newInstance) {
 		return weeklySummaryDao.save(newInstance);
@@ -69,10 +71,7 @@ public class WeeklySummaryServiceImpl implements WeeklySummaryService {
 	@Override
 	public Integer createWeeklySummary(Long uid, int goalCheckInTimes,
 			int actualCheckInTimes, Date createTime, String comment) {
-		User user = userDao.get(uid);
-//		if (null == user)
-//			throw new java.lang.NullPointerException("can't get user from "
-//					+ uid);
+		User user = userService.get(uid);
 		WeeklySummary weeklySummary = new WeeklySummary()
 				.setActualCheckInTimes(actualCheckInTimes).setComment(comment)
 				.setGoalCheckInTimes(goalCheckInTimes).setUser(user);
@@ -80,33 +79,43 @@ public class WeeklySummaryServiceImpl implements WeeklySummaryService {
 			weeklySummary.setCreateTime(createTime);
 		return weeklySummaryDao.save(weeklySummary);
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<WeeklySummary> getUserWeeklySummary(Long uid) {
-		User user = userDao.get(uid);
-//		if(null == user)
-//			throw new java.lang.NullPointerException("can't get user from "+uid);
- 		Set<WeeklySummary> summaries = user.getWeeklySummaries();
- 		List<WeeklySummary> result = new ArrayList<WeeklySummary>(summaries);
- 		Collections.sort(result,comparator);
-		return result;
+	private Criterion[] userWeeklySummaryCriterion(Long uid){
+		Criterion [] crits = {
+				Restrictions.eq("user", userService.get(uid))
+		};
+		return crits;
 	}
 
 	@Override
+	public List<WeeklySummary> getUserWeeklySummary(Long uid) {
+		return weeklySummaryDao.findByCriteria(userWeeklySummaryCriterion(uid));
+	}
+	private List<WeeklySummary> warpCriterions(Integer length,Integer startId,boolean after,Criterion...crits){
+		if(Utils.checkIdIsZero(startId)) 
+			return weeklySummaryDao.findByCriteria(length,crits);
+		WeeklySummary weeklySummary = get(startId);
+		return weeklySummaryDao.findByCriteria(length,
+				Utils.warpIdRangeLimit(weeklySummary.getCreateTime(),"createTime",after, crits));
+	}
+	@Override
 	public List<WeeklySummary> getUserWeeklySummary(Long uid, Integer startId,
 			Integer length,boolean after) {
-		//return Utils.subList(start, end, getUserWeeklySummary(uid));
-		return Utils.cutEventList(getUserWeeklySummary(uid), startId, length, after, true);
+		return warpCriterions(length,startId,after,userWeeklySummaryCriterion(uid));
+	//weeklySummaryDao.findByCriteria(length, Utils.warpIdRangeLimit(after, startId, userWeeklySummaryCriterion(uid)));
 	}
 
 	@Override
 	public void deleteWeeklySummary(Long uid, Integer wid) {
 		WeeklySummary summary = weeklySummaryDao.get(wid);
-		User user = userDao.get(uid);
+		User user = userService.get(uid);
 		user.getWeeklySummaries().remove(summary);
 		summary.setUser(null);
 		weeklySummaryDao.delete(wid);
+	}
+
+	@Override
+	public void saveOrUpdate(WeeklySummary transientObject) {
+		weeklySummaryDao.saveOrUpdate(transientObject);
 	}
 
 }

@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.ebupt.justholdon.server.database.service.EventType;
@@ -33,33 +34,14 @@ public class Event implements BaseEntity<Integer>{
 	@ManyToOne
 	@JoinColumn(name = "habitId")
 	private Habit habit;
-	// private String habitName;
 	private EventType type;
-	private Integer relationId;
-	private String content;
+	private Integer relationId = 0;
+	private String content = "";
 	private MessageFlag flag = MessageFlag.JUST_EVENT;
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
 	private Boolean isSystemInfo = false;
-
-//	private static Comparator<Event> dateComparator = new Comparator<Event>() {
-//
-//		@Override
-//		public int compare(Event arg0, Event arg1) {
-//			return (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime()
-//					.getTime());
-//		}
-//
-//	};
-//	private static Comparator<Event> idComparator = new Comparator<Event>() {
-//
-//		@Override
-//		public int compare(Event arg0, Event arg1) {
-//			return arg1.getId() - arg0.getId();
-//		}
-//
-//	};
-
+	private Boolean isDeleted = false;
 	public Integer getId() {
 		return id;
 	}
@@ -177,4 +159,38 @@ public class Event implements BaseEntity<Integer>{
 		this.modifyTime = modifyTime;
 	}
 
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public Event setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+		return this;
+	}
+	@Override
+	public String toString(){
+		return new StringBuilder().append("#").append(id).append(" createTime:").append(createTime).append(" FLAG:").append(flag)
+				.append(" SPONSOR:").append(sponsor).toString();
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final Event other = (Event) o;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

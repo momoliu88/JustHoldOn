@@ -1,0 +1,128 @@
+diff com/ebupt/justholdon/server/database/entity/DeviceType.java database/entity/DeviceType.java
+1,5c1,5
+< package com.ebupt.justholdon.server.database.entity;
+< 
+< public enum DeviceType {
+< 	ANDRROID,IOS;
+< }
+---
+> package com.ebupt.justholdon.server.database.entity;
+> 
+> public enum DeviceType {
+>  ANROID,IOS
+> }
+diff com/ebupt/justholdon/server/database/entity/Habit.java database/entity/Habit.java
+56,63c56
+< 	public Integer getTimes() {
+< 		return times;
+< 	}
+< 
+< 	public Habit setTimes(Integer times) {
+< 		this.times = times;
+< 		return this;
+< 	}
+---
+> 	
+201a195,202
+> 	public void setTimes(Integer times) {
+> 		this.times = times;
+> 	}
+> 
+> 	public Integer getTimes() {
+> 		return times;
+> 	}
+> 
+diff com/ebupt/justholdon/server/database/entity/UserField.java database/entity/UserField.java
+124,131d123
+< 	public Integer getMoney() {
+< 		return money;
+< 	}
+< 
+< 	public UserField setMoney(Integer money) {
+< 		this.money = money;
+< 		return this;
+< 	}
+133,135d124
+< 	public Integer getUserLevel() {
+< 		return userLevel;
+< 	}
+137,140c126
+< 	public UserField setUserLevel(Integer userLevel) {
+< 		this.userLevel = userLevel;
+< 		return this;
+< 	}
+---
+> 	
+220a207,222
+> 
+> 	public void setMoney(Integer money) {
+> 		this.money = money;
+> 	}
+> 
+> 	public Integer getMoney() {
+> 		return money;
+> 	}
+> 
+> 	public void setUserLevel(Integer userLevel) {
+> 		this.userLevel = userLevel;
+> 	}
+> 
+> 	public Integer getUserLevel() {
+> 		return userLevel;
+> 	}
+diff com/ebupt/justholdon/server/database/entity/Version.java database/entity/Version.java
+16a17,19
+> 	private DeviceType type = null;
+> 	private String version;
+> 	private String descrtiption;
+20,21c23,30
+< 
+< 	public void setId(Integer id) {
+---
+> 	public Version setDescription(String descrtiption){
+> 		this.descrtiption = descrtiption;
+> 		return this;
+> 	}
+> 	public String getDescription(){
+> 		return this.descrtiption;
+> 	}
+> 	public Version setId(Integer id) {
+22a32,39
+> 		return this;
+> 	}
+> 	public Version setType(DeviceType type){
+> 		this.type = type;
+> 		return this;
+> 	}
+> 	public DeviceType getType(){
+> 		return this.type;
+24,26d40
+< 
+< 	private String version;
+< 
+31c45
+< 	public void setVersion(String version) {
+---
+> 	public Version setVersion(String version) {
+32a47
+> 		return this;
+34,35d48
+< 	private DeviceType deviceType;
+< 	private String description;
+46,61d58
+< 	public DeviceType getDeviceType() {
+< 		return deviceType;
+< 	}
+< 
+< 	public void setDeviceType(DeviceType deviceType) {
+< 		this.deviceType = deviceType;
+< 	}
+< 
+< 	public String getDescription() {
+< 		return description;
+< 	}
+< 
+< 	public void setDescription(String description) {
+< 		this.description = description;
+< 	}
+< 

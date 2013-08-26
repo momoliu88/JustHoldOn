@@ -40,7 +40,7 @@ public class QuoteServiceImpl implements QuoteService{
 
 	@Override
 	public void delete(Integer id) {
-		quoteDao.delete(id);
+		//quoteDao.delete(id);
 	}
 
 	@Override
@@ -59,6 +59,11 @@ public class QuoteServiceImpl implements QuoteService{
 									.setContent(quote.getContent())
 									.setAuthor(quote.getAuthor());
 		return pair;
+	}
+
+	@Override
+	public void saveOrUpdate(Quote transientObject) {
+		quoteDao.saveOrUpdate(transientObject);		
 	}
 	
 

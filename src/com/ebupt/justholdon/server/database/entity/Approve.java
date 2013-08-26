@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -42,7 +43,7 @@ public class Approve implements BaseEntity<Integer> {
 
 	public Approve setUser(User user) {
 		this.user = user;
-		if(null != user)
+		if (null != user)
 			user.getApproves().add(this);
 		return this;
 	}
@@ -53,7 +54,7 @@ public class Approve implements BaseEntity<Integer> {
 
 	public Approve setCheckin(CheckIn checkin) {
 		this.checkin = checkin;
-		if(null != checkin)
+		if (null != checkin)
 			checkin.getApproves().add(this);
 		return this;
 	}
@@ -75,5 +76,31 @@ public class Approve implements BaseEntity<Integer> {
 	@Override
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
+	}
+
+	/*
+	 * using approve's id to compare.
+	 * */
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final Approve other = (Approve) o;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
 	}
 }

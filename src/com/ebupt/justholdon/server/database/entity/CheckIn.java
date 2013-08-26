@@ -1,9 +1,10 @@
 package com.ebupt.justholdon.server.database.entity;
 
+import java.util.ArrayList;
+//import java.util.Comparator;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,11 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "checkin")
-public class CheckIn implements BaseEntity<Integer>{
+public class CheckIn implements BaseEntity<Integer> {
 	public CheckIn() {
 	};
 
@@ -34,37 +37,61 @@ public class CheckIn implements BaseEntity<Integer>{
 	@ManyToOne
 	@JoinColumn(name = "habitId", nullable = false)
 	private Habit habit;
-	private String description;
-	private String picUrl;
-	private String audioUrl;
-	private String location;
+	private String description="";
+	private String picUrl="";
+	private String audioUrl="";
+	private String location="";
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
+	private Boolean isDeleted = false;
 
-	@OneToMany(mappedBy = "checkin", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<Approve> approves = new HashSet<Approve>();
+	/*
+	 * HAVE NOTHING TO EXPLAIN THIS FUCKIN THINGS
+	 * */
+	@OneToMany(mappedBy = "checkin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.EXTRA)
+	@OrderBy("createTime DESC,id DESC")
+	private List<Approve> approves = new ArrayList<Approve>();
 
-	@OneToMany(mappedBy = "checkIn", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	private Set<Comment> comments = new HashSet<Comment>();
-	
-	private static Comparator<CheckIn> dateComparator = new Comparator<CheckIn>()
-			{
-				@Override
-				public int compare(CheckIn arg0, CheckIn arg1) {
-					return (int) (arg1.getCheckInTime().getTime() - arg0.getCheckInTime().getTime());
-				}
-		
-			};
+	@OneToMany(mappedBy = "checkIn", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.EXTRA)
+	@OrderBy("createTime DESC,id DESC")
+	private List<Comment> comments = new ArrayList<Comment>();
+
+	private static Comparator<CheckIn> dateComparator = new Comparator<CheckIn>() {
+		@Override
+		public int compare(CheckIn arg0, CheckIn arg1) {
+			Long comp = arg1.getCheckInTime().getTime()
+					- arg0.getCheckInTime().getTime();
+
+			if (0 == comp)
+				return (int) (arg1.getId() - arg0.getId());
+			if (comp > 0)
+				return 1;
+			return -1;
+		}
+
+	};
+	private static int countCommentsAndApproves(CheckIn ck){
+		return ck.getApproves().size()+ck.getComments().size();
+	}
+	public static Comparator<CheckIn> hotCheckInComp = new Comparator<CheckIn>() {
+		@Override
+		public int compare(CheckIn arg0, CheckIn arg1) {
+			return countCommentsAndApproves(arg1)-countCommentsAndApproves(arg0);
+		}
+
+	};
 	
 	public Integer getId() {
 		return id;
 	}
 
-	public Set<Comment> getComments() {
+	public List<Comment> getComments() {
 		return comments;
 	}
 
-	public CheckIn setComments(Set<Comment> comments) {
+	public CheckIn setComments(List<Comment> comments) {
 		this.comments = comments;
 		return this;
 	}
@@ -89,8 +116,11 @@ public class CheckIn implements BaseEntity<Integer>{
 
 	public CheckIn setUser(User user) {
 		this.user = user;
-		if(null != user)
+		if (null != user)
+		{
 			user.getCheckIns().add(this);
+			user.setCheckInNums(user.getCheckInNums()+1);
+		}
 		return this;
 	}
 
@@ -100,7 +130,7 @@ public class CheckIn implements BaseEntity<Integer>{
 
 	public CheckIn setHabit(Habit habit) {
 		this.habit = habit;
-		if(null != habit)
+		if (null != habit)
 			habit.getCheckIns().add(this);
 		return this;
 	}
@@ -141,11 +171,11 @@ public class CheckIn implements BaseEntity<Integer>{
 		return this;
 	}
 
-	public Set<Approve> getApproves() {
+	public List<Approve> getApproves() {
 		return approves;
 	}
 
-	public CheckIn setApproves(Set<Approve> approves) {
+	public CheckIn setApproves(List<Approve> approves) {
 		this.approves = approves;
 		return this;
 	}
@@ -153,6 +183,7 @@ public class CheckIn implements BaseEntity<Integer>{
 	public static Comparator<CheckIn> getDateComparator() {
 		return dateComparator;
 	}
+
 	@Override
 	public Date getCreateTime() {
 		return createTime;
@@ -161,13 +192,45 @@ public class CheckIn implements BaseEntity<Integer>{
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
+
 	@Override
 	public Date getModifyTime() {
 		return modifyTime;
 	}
+
 	@Override
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
-	
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public CheckIn setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+		return this;
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final CheckIn other = (CheckIn) o;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

@@ -1,8 +1,14 @@
 package com.ebupt.justholdon.server.database.service;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.ProjectionList;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +22,8 @@ public class SystemInfoSendedServiceImpl implements SystemInfoSendedService {
 
 	@Autowired
 	private SystemInfoSendedDao systemInfoSendedDao;
+	@Autowired
+	private UserService userService;
 	@Override
 	public Integer save(SystemInfoSended newInstance) {
 		return systemInfoSendedDao.save(newInstance);
@@ -49,6 +57,30 @@ public class SystemInfoSendedServiceImpl implements SystemInfoSendedService {
 	@Override
 	public List<SystemInfoSended> findAll() {
 		return systemInfoSendedDao.findAll();
+	}
+
+	@Override
+	public void saveOrUpdate(SystemInfoSended transientObject) {
+		systemInfoSendedDao.saveOrUpdate(transientObject);
+	}
+
+	private Criterion [] userCriterions(Long uid){
+		Criterion[] crits = {
+				Restrictions.eq("user", userService.get(uid))
+		};
+		return crits;
+	}
+	@Override
+	public List<Integer> getSendedInfos(Long uid) {
+		ProjectionList projectionList = Projections.projectionList().add(Projections.property("systemInfo"));
+		List<?> ret = systemInfoSendedDao.findByCriteria(projectionList, userCriterions(uid));
+		List<Integer> results = new ArrayList<Integer>();
+		Iterator<?> iterator =ret.iterator();
+		while(iterator.hasNext()){
+			Object[] obj = (Object[]) iterator.next();
+			results.add(Integer.valueOf(obj[0].toString()));
+		}
+		return results;
 	}
 
 }

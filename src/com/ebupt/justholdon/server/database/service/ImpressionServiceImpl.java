@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ebupt.justholdon.server.database.dao.ImpressionDao;
-import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.Impression;
 import com.ebupt.justholdon.server.database.entity.User;
 
@@ -20,7 +19,7 @@ public class ImpressionServiceImpl implements ImpressionService {
 	@Autowired
 	private ImpressionDao impressionDao;
 	@Autowired
-	private UserDao userDao;
+	private UserService userService;
 	
 	private Logger logger = Logger.getLogger(this.getClass());
 	@Override
@@ -50,7 +49,7 @@ public class ImpressionServiceImpl implements ImpressionService {
 		impression.getSponsor().getSponseImpressiones().remove(impression);
 		impression.setReceiver(null);
 		impression.setSponsor(null);
-		impressionDao.delete(impression);
+		impressionDao.update(impression);
 	}
 
 	@Override
@@ -60,8 +59,8 @@ public class ImpressionServiceImpl implements ImpressionService {
 
 	@Override
 	public void addImpression(Long uidA, Long uidB, String content) {
-		User userA = userDao.get(uidA);
-		User userB = userDao.get(uidB);
+		User userA = userService.get(uidA);
+		User userB = userService.get(uidB);
 		if(userA == null || userB == null)
 		{
 			logger.warn("userA["+uidA+"] => userB["+uidB+"] can't be NULL.Add impression failed!");
@@ -71,14 +70,14 @@ public class ImpressionServiceImpl implements ImpressionService {
 		userA.getSponseImpressiones().add(impression);
 		userB.getReceivedImpressiones().add(impression);
 		impressionDao.saveOrUpdate(impression);
-		userDao.update(userA);
-		userDao.update(userB);
+		userService.update(userA);
+		userService.update(userB);
 	}
 
 	@Override
 	public void addImpression(Long uidA, Long uidB, Impression impression) {
-		User userA = userDao.get(uidA);
-		User userB = userDao.get(uidB);
+		User userA = userService.get(uidA);
+		User userB = userService.get(uidB);
 		if(userA == null || userB == null || impression == null)
 		{
 			logger.warn("userA["+uidA+"] => userB["+uidB+"] can't be NULL.Add impression failed!");
@@ -87,7 +86,12 @@ public class ImpressionServiceImpl implements ImpressionService {
 		userA.getSponseImpressiones().add(impression);
 		userB.getReceivedImpressiones().add(impression);
 		impressionDao.saveOrUpdate(impression);
-		userDao.update(userA);
-		userDao.update(userB);
+		userService.update(userA);
+		userService.update(userB);
+	}
+
+	@Override
+	public void saveOrUpdate(Impression transientObject) {
+		impressionDao.saveOrUpdate(transientObject);		
 	}
 }

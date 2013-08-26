@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -21,12 +22,12 @@ public class WeeklySummary implements BaseEntity<Integer>{
 	@ManyToOne
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
-	private int goalCheckInTimes;
-	private int actualCheckInTimes;
+	private int goalCheckInTimes = 0;
+	private int actualCheckInTimes = 0;
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
-
-	private String comment;
+	private String comment = "";
+	
 	@Override
 	public Integer getId() {
 		return id;
@@ -87,5 +88,25 @@ public class WeeklySummary implements BaseEntity<Integer>{
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!((null != obj) && (obj.getClass() == this.getClass())))
+			return false;
+		final WeeklySummary other = (WeeklySummary) obj;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}	
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

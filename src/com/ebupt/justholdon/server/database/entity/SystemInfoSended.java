@@ -8,12 +8,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "system_info_sended_tb")
-public class SystemInfoSended implements BaseEntity<Long>{
-	public SystemInfoSended(){};
+public class SystemInfoSended implements BaseEntity<Long> {
+	public SystemInfoSended() {
+	};
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -26,10 +29,12 @@ public class SystemInfoSended implements BaseEntity<Long>{
 	private Date sendTime = new Date();
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
+
 	@Override
 	public Long getId() {
 		return id;
 	}
+
 	@Override
 	public Date getCreateTime() {
 		return createTime;
@@ -38,10 +43,12 @@ public class SystemInfoSended implements BaseEntity<Long>{
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
+
 	@Override
 	public Date getModifyTime() {
 		return modifyTime;
 	}
+
 	@Override
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
@@ -50,26 +57,53 @@ public class SystemInfoSended implements BaseEntity<Long>{
 	public SystemInfo getSystemInfo() {
 		return systemInfo;
 	}
+
 	public SystemInfoSended setSystemInfo(SystemInfo systemInfo) {
 		this.systemInfo = systemInfo;
-		if(null != systemInfo)
-		systemInfo.getSendedSystemInfos().add(this);
+		if (null != systemInfo)
+			systemInfo.getSendedSystemInfos().add(this);
 		return this;
 	}
+
 	public User getUser() {
 		return user;
 	}
+
 	public SystemInfoSended setUser(User user) {
 		this.user = user;
-		if(null != user)
+		if (null != user)
 			user.getReceiveSystemInfos().add(this);
 		return this;
 	}
+
 	public Date getSendTime() {
 		return sendTime;
 	}
+
 	public SystemInfoSended setSendTime(Date sendTime) {
 		this.sendTime = sendTime;
 		return this;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final SystemInfoSended other = (SystemInfoSended) o;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
 	}
 }

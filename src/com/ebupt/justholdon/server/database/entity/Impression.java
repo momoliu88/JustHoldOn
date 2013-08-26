@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -27,7 +28,7 @@ public class Impression implements BaseEntity<Integer> {
 	private User receiver;
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
-	private String content;
+	private String content ="";
 
 	@Override
 	public Integer getId() {
@@ -86,5 +87,25 @@ public class Impression implements BaseEntity<Integer> {
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final Impression other = (Impression) o;
+		return other.getId().equals(this.getId());
+	}
 
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

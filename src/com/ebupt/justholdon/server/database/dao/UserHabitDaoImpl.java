@@ -1,5 +1,8 @@
 package com.ebupt.justholdon.server.database.dao;
 
+import java.util.Arrays;
+
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +20,7 @@ public class UserHabitDaoImpl extends GenericHibernateDaoImpl<UserHabit, Integer
 	public UserHabitDaoImpl()
 	{
 		this(UserHabit.class);
+		setGlobalOrder(Arrays.asList(Order.desc("createTime")));
 	}
 	@Override
 	public void delete(UserHabit persistentObject)

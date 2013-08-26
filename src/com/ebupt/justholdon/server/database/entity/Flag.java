@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -23,14 +24,37 @@ public class Flag  implements BaseEntity<Integer>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
-	private String content;
-	private String target;
-	@ManyToMany(mappedBy = "flags",fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+	private String content="";
+	private String target = "";
+	@ManyToMany(mappedBy = "flags",fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.EXTRA)
 	private Set<Habit> habits = new HashSet<Habit>();
-	@ManyToMany(mappedBy = "flags",fetch = FetchType.EAGER,cascade=CascadeType.ALL)
+	@ManyToMany(mappedBy = "flags",fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.EXTRA)
 	private Set<User> users = new HashSet<User>();
+	private Integer userNums = 0 ;
+	private Integer habitNums = 0;
+	
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
+
+	public Integer getUserNums() {
+		return userNums;
+	}
+
+	public Flag setUserNums(Integer userNums) {
+		this.userNums = userNums;
+		return this;
+	}
+
+	public Integer getHabitNums() {
+		return habitNums;
+	}
+
+	public Flag setHabitNums(Integer habitNums) {
+		this.habitNums = habitNums;
+		return this;
+	}
 
 	private static Comparator<Flag> comparator = new Comparator<Flag>() {
 		@Override
@@ -107,4 +131,26 @@ public class Flag  implements BaseEntity<Integer>{
 		return new StringBuilder().append("#").append(id).append(":[")
 				.append(content).append("]").toString();
 	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final Flag other = (Flag) o;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
+	 
 }

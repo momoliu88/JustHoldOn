@@ -50,75 +50,25 @@ public class FlagServiceImplTest {
 		userDao = (UserDao) ctx.getBean("userDao");
 		userService = (UserService) ctx.getBean("userService");
 		flagService = (FlagService) ctx.getBean("flagService");
-
-		user1 = new User().setId(11L).setUserName("name5").setAvatar("ava")
-				.setPassword("pass").setToken("token").setDeviceToken("device");
-		user2 = new User().setId(12L).setUserName("name7").setAvatar("ava")
-				.setPassword("pass").setToken("token").setDeviceToken("device");
-		habit1 = new Habit().setStages("{1,2,3}").setHabitName("habitName1")
-				.setGroupName("group1").setType(HabitType.SYSTEM)
-				.setUnit(PersistUnit.DAY);
-		habit2 = new Habit().setStages("{1,2,3}").setHabitName("habitName2")
-				.setGroupName("group1").setType(HabitType.SYSTEM)
-				.setUnit(PersistUnit.DAY);
-		habit3 = new Habit().setStages("{1,2,3}").setHabitName("habitName3")
-				.setGroupName("group1").setType(HabitType.SYSTEM)
-				.setUnit(PersistUnit.DAY);
-
-		hids.add(habitService.save(habit1));
-		hids.add(habitService.save(habit2));
-		hids.add(habitService.save(habit3));
-		
-		uids.add( userService.save(user2));
-		uids.add(userService.save(user1));
-
-
-		flag1 = new Flag().setContent("flag2").setTarget("type1");
-		flag2 = new Flag().setContent("flag1").setTarget("type1");
-		flag3 = new Flag().setContent("flag3").setTarget("type3");
-
-		flagIds.add(flagService.save(flag1));
-		flagIds.add(flagService.save(flag2));
-		flagIds.add(flagService.save(flag3));
-
-		User _user = userService.get(uids.get(0));
-		_user.setUserName("*********");
-		userService.update(_user);
-		User _user2 = userService.get(uids.get(1));
-		userService.update(_user2);
-		
-//		_user2.getFlags().add(flag1);
-//		flag1.getUsers().add(_user2);
-//		flagService.update(flag1);
-//		userService.update(_user2);
-		
-		flagService.addUser(uids.get(0), flagIds.get(0));
-		flagService.addUser(uids.get(1), flagIds.get(0));
-		
-		flagService.addUser(uids.get(1), flagIds.get(0));
-
-		flagService.addHabit(hids.get(0), flagIds.get(0));
-		flagService.addHabit(hids.get(1), flagIds.get(1));
-		flagService.addHabit(hids.get(2), flagIds.get(2));
-
-		flagService.addHabit(hids.get(1), flagIds.get(0));
-		flagService.addHabit(hids.get(2), flagIds.get(0));
-		
+		Integer id1 = flagService.createFlag("减肥");
+		Integer id2= flagService.createFlag("聪明");
+//		flagService.addUser(1716305793L, 4);
+		flagService.addHabit(67, 4);
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		
-		flagService.removeUser(uids.get(0), flagIds.get(0));
-		flagService.removeUser(uids.get(1), flagIds.get(0));
-		
-		
-		flagService.removeHabit(hids.get(0), flagIds.get(0));
-		flagService.removeHabit(hids.get(1), flagIds.get(1));
-		flagService.removeHabit(hids.get(2), flagIds.get(2));
-
-		flagService.removeHabit(hids.get(1), flagIds.get(0));
-		flagService.removeHabit(hids.get(2), flagIds.get(0));	
+//		flagService.removeUser(uids.get(0), flagIds.get(0));
+//		flagService.removeUser(uids.get(1), flagIds.get(0));
+//		
+//		
+//		flagService.removeHabit(hids.get(0), flagIds.get(0));
+//		flagService.removeHabit(hids.get(1), flagIds.get(1));
+//		flagService.removeHabit(hids.get(2), flagIds.get(2));
+//
+//		flagService.removeHabit(hids.get(1), flagIds.get(0));
+//		flagService.removeHabit(hids.get(2), flagIds.get(0));	
 		
 //		flagService.delete(flagIds.get(0));
 //		flagService.delete(flagIds.get(1));
@@ -138,15 +88,18 @@ public class FlagServiceImplTest {
 
 	@Test
 	public void testFindAllBoolean() {
-		List<Flag> flags = flagService.findAll(true);
-		assertEquals("flag2", flags.get(0).getContent());
-		
-//		User _user = userService.get(12L);
-//		Set<Flag> flags = _user.getFlags();
-//		for(Flag flag:flags)
-//		{
-//			System.out.println(flag);
-//		}
+		List<Flag> flags = flagService.findAll(false, 0, 20, true);
+		for(Flag flag:flags)
+			System.out.println(flag);
+		List<Integer> ids = new ArrayList<Integer>();
+		ids.add(4);
+		ids.add(5);
+		List<Habit> habits = flagService.findHabits(ids);
+		for(Habit habit:habits)
+			System.out.println(habit);
+		habits = flagService.findHabits(1716305793L);
+		for(Habit habit:habits)
+			System.out.println(habit);
 	}
 /*
 	@Test

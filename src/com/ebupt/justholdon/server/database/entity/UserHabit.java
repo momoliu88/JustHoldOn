@@ -8,13 +8,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.ebupt.justholdon.server.database.service.HabitState;
 
 @Entity
 @Table(name = "userHabits")
-public class UserHabit implements BaseEntity<Integer>{
+public class UserHabit implements BaseEntity<Integer> {
 	public UserHabit() {
 	};
 
@@ -27,27 +28,29 @@ public class UserHabit implements BaseEntity<Integer>{
 	@ManyToOne
 	@JoinColumn(name = "userId", nullable = false)
 	private User user;
-	private AlarmType needAlarm;
+	private AlarmType needAlarm = AlarmType.NOTALARM;
 	private Date alarmTime;
 	private Date createTime = new Date();
-	private Date endTime;
+	private Date endTime = null;
 	private String currentStage = "INIT";
 	private HabitState stat = HabitState.ING;
+
 	private Date modifyTime = new Date();
 	private int times = 0;
 	private PrivilegeType privilege = PrivilegeType.ALL;
-	private PersistUnit unit;
- 	private String stages;
- 	private String description;
+	private PersistUnit unit = PersistUnit.DAY;
+	private String stages = "";
+	private String description = "";
 
-	
-//	private static Comparator<UserHabit> dateComparator = new Comparator<UserHabit>() {
-//		@Override
-//		public int compare(UserHabit arg1, UserHabit arg2) {
-//			return (int) (arg2.getCreateTime().getTime() - arg1.getCreateTime().getTime());
-//		}
-//	};
-	
+	// private static Comparator<UserHabit> dateComparator = new
+	// Comparator<UserHabit>() {
+	// @Override
+	// public int compare(UserHabit arg1, UserHabit arg2) {
+	// return (int) (arg2.getCreateTime().getTime() -
+	// arg1.getCreateTime().getTime());
+	// }
+	// };
+
 	public String getDescription() {
 		return description;
 	}
@@ -56,6 +59,7 @@ public class UserHabit implements BaseEntity<Integer>{
 		this.description = description;
 		return this;
 	}
+
 	@Override
 	public Integer getId() {
 		return id;
@@ -72,8 +76,11 @@ public class UserHabit implements BaseEntity<Integer>{
 
 	public UserHabit setHabit(Habit habit) {
 		this.habit = habit;
-		if(null != habit)
+		if (null != habit)
+		{
 			habit.getUserHabits().add(this);
+//			habit.setActiveUserNum(habit.getActiveUserNum()+1);
+		}
 		return this;
 	}
 
@@ -83,7 +90,7 @@ public class UserHabit implements BaseEntity<Integer>{
 
 	public UserHabit setUser(User user) {
 		this.user = user;
-		if(null != user)
+		if (null != user)
 			user.getUserHabits().add(this);
 		return this;
 	}
@@ -115,7 +122,6 @@ public class UserHabit implements BaseEntity<Integer>{
 		return this;
 	}
 
-
 	public Date getEndTime() {
 		return endTime;
 	}
@@ -143,11 +149,10 @@ public class UserHabit implements BaseEntity<Integer>{
 		return this;
 	}
 
-
 	public Date getModifyTime() {
 		return modifyTime;
 	}
-
+	@Override
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
@@ -161,9 +166,9 @@ public class UserHabit implements BaseEntity<Integer>{
 		return this;
 	}
 
-//	public static Comparator<UserHabit> getDateComparator() {
-//		return dateComparator;
-//	}
+	// public static Comparator<UserHabit> getDateComparator() {
+	// return dateComparator;
+	// }
 
 	public int getTimes() {
 		return times;
@@ -191,6 +196,25 @@ public class UserHabit implements BaseEntity<Integer>{
 		this.stages = stages;
 		return this;
 	}
-	
-	 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!((null != obj) && (obj.getClass() == this.getClass())))
+			return false;
+		final UserHabit other = (UserHabit) obj;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

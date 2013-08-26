@@ -1,17 +1,17 @@
 package com.ebupt.justholdon.server.database.service;
 
 import java.util.List;
-import java.util.Set;
+//import java.util.Set;
 
 import java.util.Map;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ebupt.justholdon.server.database.dao.ApproveDao;
-import com.ebupt.justholdon.server.database.dao.CheckInDao;
-import com.ebupt.justholdon.server.database.dao.UserDao;
 import com.ebupt.justholdon.server.database.entity.Approve;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
 import com.ebupt.justholdon.server.database.entity.User;
@@ -19,14 +19,14 @@ import com.ebupt.justholdon.server.database.entity.User;
 @Service("approveService")
 @Transactional
 public class ApproveServiceImpl implements ApproveService {
-	
+
 	@Autowired
 	private ApproveDao approveDao;
 	@Autowired
-	private UserDao userDao;
+	private UserService userService;
 	@Autowired
-	private CheckInDao checkInDao;
-	
+	private CheckInService checkInService;
+
 	@Override
 	public Integer save(Approve newInstance) {
 		return approveDao.save(newInstance);
@@ -54,7 +54,8 @@ public class ApproveServiceImpl implements ApproveService {
 		approve.getUser().getApproves().remove(approve);
 		approve.setCheckin(null);
 		approve.setUser(null);
-		approveDao.delete(approve);
+	    approveDao.delete(approve);
+		//approveDao.update(approve);
 	}
 
 	@Override
@@ -64,19 +65,22 @@ public class ApproveServiceImpl implements ApproveService {
 
 	@Override
 	public Integer approveCheckIn(Long uid, Integer checkInId) {
-		User user = userDao.get(uid);
-		CheckIn ck = checkInDao.get(checkInId);
-		Approve approve = new Approve().setCheckin(ck).setUser(user); 
+		User user = userService.get(uid);
+		CheckIn ck = checkInService.get(checkInId);
+		Approve approve = new Approve().setCheckin(ck).setUser(user);
 		return approveDao.save(approve);
 	}
 
 	@Override
 	public boolean isApproved(Long uid, Integer checkInId) {
-		CheckIn ck = checkInDao.get(checkInId);
-		Set<Approve> approves =  ck.getApproves();
-		for(Approve approve:approves)
-			if(approve.getUser().getId().equals(uid))
-				return true;
-		return false;
+		Criterion criterion[] = { Restrictions.eq("user", userService.get(uid)),
+				Restrictions.eq("checkin", checkInService.get(checkInId)) };
+		List<Approve> approves = approveDao.findByCriteria(criterion);
+		return (null != approves) && (approves.size() > 0);
+	}
+
+	@Override
+	public void saveOrUpdate(Approve transientObject) {
+		approveDao.saveOrUpdate(transientObject);		
 	}
 }

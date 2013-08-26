@@ -7,13 +7,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.ebupt.justholdon.server.database.entity.Approve;
 import com.ebupt.justholdon.server.database.entity.CheckIn;
+import com.ebupt.justholdon.server.database.entity.Comment;
 import com.ebupt.justholdon.server.database.entity.Habit;
 import com.ebupt.justholdon.server.database.entity.HabitType;
 import com.ebupt.justholdon.server.database.entity.PersistUnit;
@@ -39,7 +42,7 @@ public class CheckInServiceImplTest {
 	static List<Integer> hids = new ArrayList<Integer>();
 	static List<Long> uids = new ArrayList<Long>();
 	static List<Integer> cids = new ArrayList<Integer>();
-	static	{
+	static {
 		ApplicationContext ctx = new FileSystemXmlApplicationContext("bean.xml");
 		habitService = (HabitService) ctx.getBean("habitService");
 		userService = (UserService) ctx.getBean("userService");
@@ -48,154 +51,92 @@ public class CheckInServiceImplTest {
 		checkInService = (CheckInService) ctx.getBean("checkInService");
 		commentService = (CommentService) ctx.getBean("commentService");
 		approveService = (ApproveService) ctx.getBean("approveService");
+ 
 
-		Habit habit = new Habit().setHabitName("name1").setUnit(PersistUnit.DAY)
-				.setGroupName("groupName1").setType(HabitType.SYSTEM)
-				.setStages("{1,2,3}");
-		Habit habit1 = new Habit().setHabitName("name2").setUnit(PersistUnit.DAY)
-				.setGroupName("groupName1").setType(HabitType.SYSTEM)
-				.setStages("{1,2,3}");
-		User user1 = new User("user1", "password", "avatar", 787L, "device");
-		User user2 = new User("user1", "password", "avatar", 788L, "device");
-
-		hids.add(habitService.save(habit));
-		hids.add(habitService.save(habit1));
-
-		uids.add(userService.save(user1));
-		uids.add(userService.save(user2));
-
-		UserHabit uHid = new UserHabit().setPrivilege(PrivilegeType.ALL);
-		UserHabit uHid2 = new UserHabit().setPrivilege(PrivilegeType.ALL);
-		userHabitService.connectUserHabit(uids.get(0), hids.get(1), uHid2);
-		userHabitService.connectUserHabit(uids.get(0), hids.get(0), uHid);
-		
 	}
+
 	@Before
 	public void setUp() throws Exception {
-		
+
 	}
 
 	@After
 	public void tearDown() throws Exception {
-		for(Integer cid:cids)
-			checkInService.deleteCheckIn(cid);
-		cids.clear();
+		// for(Integer cid:cids)
+		// checkInService.deleteCheckIn(cid);
+		// cids.clear();
 	}
 
+	 
+// 	@Test
+//	public void test() {
+//		Calendar cal = Calendar.getInstance();
+//		cal.set(2013, 3,2, 0, 0, 0);
+//		Date start = cal.getTime();
+//		cal.set(2013, 3, 21, 0, 0, 0);
+//		Date end = cal.getTime();
+//		int num = checkInService.getCheckInInTimeRangeNum(1746516774L, 37,
+//				start, end);
+//		System.out.println("num " + num);
+//		
+//	}
+//	private void print(List<CheckIn>rets){
+//		for (CheckIn ret : rets) {
+//			System.out.println("ck: " + ret.getId() + " "
+//					+ ret.getCheckInTime());
+//		}
+//	}
+//	@Test
+//	public void testCheckInUidHid() {
+//		Long uid = 1671130932L;
+//		Integer hid = 78;
+//		List<CheckIn> rets = checkInService.getCheckIns(uid, hid);
+//		System.out.println(checkInService.getCheckInNum(uid, hid)+" following:");
+//		print(rets);
+//		
+//		rets = checkInService.getCheckIns(uid, hid, 1021, 10, false);
+//		System.out.println("checkInService.getCheckIns(uid, hid, 1021, 10, false);");
+//		print(rets);
+//		Calendar cal = Calendar.getInstance();
+//		cal.set(2013, 3, 21, 8, 0, 0);
+//		Date start = cal.getTime();
+//		cal.set(2013, 3, 25, 10, 0, 0);
+//
+//		Date end = cal.getTime();
+//		rets = checkInService.getCheckInInTimeRange(uid, hid, start, end);
+//		System.out.println("checkInService.getCheckInInTimeRange(uid, hid, start, end);");
+//
+//		print(rets);
+//	}
+//	@Test
+//	public void testGetCheckIns(){
+//		Long uid = 1671130932L;
+//		Long bewatched = 1762687133L;
+//		Integer hid = 76;
+//		List<CheckIn> rets = checkInService.getCheckIns(uid, bewatched, hid,973,5,true);
+//		System.out.println("in testGetCheckIns");
+//		print(rets);
+//		List<Approve> apps = checkInService.getApproves(1108);
+//		for(Approve app:apps)
+//			System.out.println(app.getCreateTime());
+//		List<Comment> comments = checkInService.getComments(1108);
+//		for(Comment comment:comments)
+//			System.out.println(comment.getCreateTime());
+//
+//	}
 	@Test
-	public void testCheckInLongInteger() {
-		cids.add(checkInService.checkIn(uids.get(0), hids.get(0)));
-		cids.add(checkInService.checkIn(uids.get(0), hids.get(0)));
-		User user = userService.get(uids.get(0));
-		assertEquals(2,user.getCheckIns().size());
-	}
-
-	@Test
-	public void testCheckInCheckIn() {
-		User user = userService.get(uids.get(0));
-		CheckIn ck = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0)));
-		CheckIn ck1 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0)));
-		CheckIn ck2 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0)));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck1));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck2));
-		assertEquals(3,user.getCheckIns().size());
-		
-
-	}
-
-	@Test
-	public void testGetCheckInsLongInteger() {
-		User user = userService.get(uids.get(0));
-		CheckIn ck1 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0)));
-		CheckIn ck2 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0)));
-		CheckIn ck3 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0)));
-		CheckIn ck4 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(1)));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck1));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck2));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck3));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(1),ck4));
-
-		List<CheckIn> cksForHabit0 =checkInService.getCheckIns(uids.get(0), hids.get(0));
-		List<CheckIn> cksForHabit1 =checkInService.getCheckIns(uids.get(0), hids.get(1));
-
-		for(CheckIn ck:cksForHabit0)
-			System.out.println("#"+ck.getId()+' '+ck.getCheckInTime());
-		assertEquals(3,cksForHabit0.size());
-		assertEquals(1,cksForHabit1.size());
-
-	}
-
-
-	@Test
-	public void testGetCheckInInTimeRangeNum() {
-		User user = userService.get(uids.get(0));
+	public void testCheckin(){
+//		checkInService.checkInAndCreateEvent(1644982463L, 22, "content");
+		Integer count = checkInService.getCheckInNum(1644982463L);
+		System.out.println(count);
 		Calendar cal = Calendar.getInstance();
-		cal.set(2012, 5, 10,0,0,0);
-		CheckIn ck1 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0))).setCheckInTime(cal.getTime());
-		cal.set(2012, 5,11,0,0,0);
-		CheckIn ck2 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0))).setCheckInTime(cal.getTime());
-		cal.set(2012, 5,11,0,0,0);
-		CheckIn ck3 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(0))).setCheckInTime(cal.getTime());
-		cal.set(2012, 5,12,0,0,0);
-		CheckIn ck4 = new CheckIn().setUser(user)
-				.setHabit(habitService.get(hids.get(1))).setCheckInTime(cal.getTime());
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck1));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck2));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(0),ck3));
-		cids.add(checkInService.checkIn(uids.get(0),hids.get(1),ck4));
-		 cal.set(2012, 5, 10,5,0,0);
-		Date start =cal.getTime();
-		 cal.set(2012, 5, 11,0,0,0);
-
-		Date end =cal.getTime();
-		cal.set(2012,5,11,0,0,0);
-		Date start1 = cal.getTime();
-		cal.set(2012,5,12,0,0,0);
-		Date end1 = cal.getTime();
-
-		System.out.println("start "+start.toString()+" end "+end.toString());
-		System.out.println("start1 "+start1.toString()+" end1 "+end1.toString());
-
-		assertEquals(2,checkInService.getCheckInInTimeRangeNum(uids.get(0), hids.get(0), start, end));
-		assertEquals(1,checkInService.getCheckInInTimeRangeNum(uids.get(0),hids.get(1), start1, end1));
-		
+		cal.set(2013,3,17,0,0,0);
+		Date start = cal.getTime();
+		cal.set(2013, 3,18,0,0,0);
+		Date end = cal.getTime();
+		List<CheckIn> cks = checkInService.getHotCheckins(1644982463L, start, end, 10);
+		for(CheckIn ck:cks)
+			System.out.println(ck.getId()+" "+(checkInService.countApproves(ck.getId())+checkInService.countComments(ck.getId())));
+//		Map<String,>
 	}
-
-	@Test
-	public void testDeleteCheckIn() {
-		//ck
-		cids.add(checkInService.checkIn(uids.get(0), hids.get(0)));
-		approveService.approveCheckIn(uids.get(1), cids.get(0));
-		commentService.createComment(uids.get(1), uids.get(0), cids.get(0), "comments"); 
-		assertEquals(1,approveService.findAll().size());
-		assertEquals(1,commentService.findAll().size());
-		checkInService.deleteCheckIn(cids.get(0));
-		assertEquals(0,approveService.findAll().size());
-		assertEquals(0,commentService.findAll().size());
-		User user = userService.get(uids.get(1));
-		System.out.println(user.getSponsorComments().size());
-		cids.clear();
-	}
- 
-	@Test
-	public void testcheckInAndCreateEvent()
-	{
-		checkInService.checkInAndCreateEvent(uids.get(0), hids.get(0), "content");
-		assertEquals(1,eventService.findAll().size());
-		CheckIn ck = new CheckIn().setPicUrl("new");
-		checkInService.checkInAndCreateEvent(uids.get(0), hids.get(0),ck, "abc");
-		assertEquals(2,eventService.findAll().size());
-	}
-
 }

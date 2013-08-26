@@ -31,7 +31,7 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User,Long>  implements 
 	}
 	@Override
 	public int getFriends(Long id) {
-		return get(id).getFriends().size();
+		return get(id).getRelationShips().size();
 	}
 	@Override
 	public User get(Long id) {

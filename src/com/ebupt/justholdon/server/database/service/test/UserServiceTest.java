@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import com.ebupt.justholdon.server.database.entity.CheckIn;
 import com.ebupt.justholdon.server.database.entity.User;
 import com.ebupt.justholdon.server.database.entity.UserField;
 import com.ebupt.justholdon.server.database.service.ComparatorType;
@@ -23,6 +24,7 @@ import com.ebupt.justholdon.server.database.service.UserService;
 public class UserServiceTest {
 	UserFieldService service;
 	UserService userService;
+	
 	List<Long> uids = new ArrayList<Long>();
 	@Before
 	public void setUp() throws Exception {
@@ -66,7 +68,7 @@ public class UserServiceTest {
 
 	@Test
 	public void testCreateAndSave() {	
-		System.out.println(userService.isValideUser(19L, "123"));
+		//System.out.println(userService.isValideUser(19L, "123"));
 		 
 	}
 /*
@@ -176,4 +178,21 @@ public class UserServiceTest {
 		removeFriends();
 	}
 	*/
+	@Test
+	public void testCheckin(){
+//		Long uid = 1507035727L;
+//		List<CheckIn> checkIns = userService.getCheckIns(uid);
+//		for(CheckIn ck:checkIns)
+//			System.out.println(ck.getCheckInTime());
+		
+	}
+	@Test
+	public void testcount(){
+//		List<User> users = userService.search("小", 0L, 10, true,true);
+//		System.out.println("size "+users.size());
+//		for(User user:users)
+//			System.out.println(user+" "+user.getFriendNums());
+		UserField uf = new UserField().setUserName("test").setId(19L).setPassword("djdjdj");
+		service.save(uf);
+	}
 }

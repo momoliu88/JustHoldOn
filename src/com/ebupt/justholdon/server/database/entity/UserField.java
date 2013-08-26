@@ -5,6 +5,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -17,26 +18,26 @@ public class UserField implements BaseEntity<Long>{
 //	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "userId")
 	private Long id;
-	private String userName;
-	private String sex;
-	private Date birthday;
-	private String email;
-	private String cellphone;
-	private String area;
-	private String description;
-	private int money;
-	private int userLevel;
-	private String sinaKey;
-	private String weiboKey;
-	private String renrenKey;
+	private String userName = null;
+	private String sex = "";
+	private Date birthday = null;
+	private String email = "";
+	private String cellphone ="";
+	private String area ="" ;
+	private String description = "";
+	private Integer money = Integer.valueOf(0);
+	private Integer userLevel = Integer.valueOf(0);
+	private String sinaKey = "";
+	private String weiboKey = "";
+	private String renrenKey = "";
 	@Column(name = "extends")
-	private String extendsInfo;
+	private String extendsInfo ="";
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
-	private String avatar;
-	private String password;
+	private String avatar ="";
+	private String password = null;
 	private BindType socialBind = BindType.WEIBO;
-	private String deviceToken;
+	private String deviceToken = "";
 
 
 	public String getDeviceToken() {
@@ -121,20 +122,20 @@ public class UserField implements BaseEntity<Long>{
 		return this;
 	}
 
-	public int getMoney() {
+	public Integer getMoney() {
 		return money;
 	}
 
-	public UserField setMoney(int money) {
+	public UserField setMoney(Integer money) {
 		this.money = money;
 		return this;
 	}
 
-	public int getUserLevel() {
+	public Integer getUserLevel() {
 		return userLevel;
 	}
 
-	public UserField setUserLevel(int userLevel) {
+	public UserField setUserLevel(Integer userLevel) {
 		this.userLevel = userLevel;
 		return this;
 	}
@@ -187,7 +188,7 @@ public class UserField implements BaseEntity<Long>{
 	public Date getModifyTime() {
 		return modifyTime;
 	}
-
+	@Override
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
@@ -218,5 +219,25 @@ public class UserField implements BaseEntity<Long>{
 		this.socialBind = socialBind;
 		return this;
 	}
-	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!((null != obj) && (obj.getClass() == this.getClass())))
+			return false;
+		final UserField other = (UserField) obj;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

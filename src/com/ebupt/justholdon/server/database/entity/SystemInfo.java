@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 @Entity
@@ -23,13 +24,14 @@ public class SystemInfo implements BaseEntity<Integer>{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	private String content;
-	private String extra;
+	private String content ="";
+	private String extra = "";
 	private Date createTime = new Date();
 	private Date modifyTime = new Date();
 	private Boolean isSystemInfo = true;
 	
 	@OneToMany(mappedBy="systemInfo",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@org.hibernate.annotations.LazyCollection(org.hibernate.annotations.LazyCollectionOption.EXTRA)
 	private Set<SystemInfoSended> sendedSystemInfos = new HashSet<SystemInfoSended>();
 	public Integer getId() {
 		return id;
@@ -82,7 +84,6 @@ public class SystemInfo implements BaseEntity<Integer>{
 	public Date getCreateTime() {
 		return createTime;
 	}
-
 	public SystemInfo setCreateTime(Date createTime) {
 		this.createTime = createTime;
 		return this;
@@ -95,5 +96,26 @@ public class SystemInfo implements BaseEntity<Integer>{
 	public SystemInfo setSendedSystemInfos(Set<SystemInfoSended> sendedSystemInfos) {
 		this.sendedSystemInfos = sendedSystemInfos;
 		return this;
+	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final SystemInfo other = (SystemInfo) o;
+		return other.getId().equals(this.getId());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
 	}
 }

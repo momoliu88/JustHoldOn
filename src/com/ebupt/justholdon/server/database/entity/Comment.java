@@ -6,6 +6,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 //import java.util.Comparator;
@@ -30,20 +31,8 @@ public class Comment implements BaseEntity<Integer>{
 	@JoinColumn(name = "checkInId")
 	private CheckIn checkIn;
 	private Date createTime = new Date();
-	private String comment;
+	private String comment="";
 	private Date modifyTime = new Date();
-//	private static Comparator<Comment> dateComparator = new Comparator<Comment>() {
-//		@Override
-//		public int compare(Comment arg0, Comment arg1) {
-//			return (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime()
-//					.getTime());
-//		}
-//
-//	};
-
-//	public static Comparator<Comment> getDateComparator() {
-//		return dateComparator;
-//	}
 
 	public Integer getId() {
 		return id;
@@ -113,5 +102,26 @@ public class Comment implements BaseEntity<Integer>{
 	public void setModifyTime(Date modifyTime) {
 		this.modifyTime = modifyTime;
 	}
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(null != o && o.getClass() == this.getClass()))
+			return false;
+		final Comment other = (Comment) o;
+		return other.getId().equals(this.getId());
+	}
 
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result += this.getId() == null ? 0 : this.getId().hashCode();
+		return result;
+	}
+
+	@Override
+	@PreUpdate
+	public void onUpdate() {
+		setModifyTime(new Date());
+	}
 }

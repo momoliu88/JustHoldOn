@@ -95,10 +95,10 @@ public class CommentServiceImplTest {
 		commentIds.add(	commentService.createComment(uids.get(1), null, cids.get(0), "hello"));
 		commentIds.add(commentService.createComment(uids.get(0), uids.get(1), cids.get(0), "ok reply"));
 		commentIds.add(commentService.createComment(uids.get(1), uids.get(0), cids.get(0), "ok reply reply"));
-		List<Comment> comments = commentService.getCommentsForCheckin(cids.get(0));
-		assertEquals(3,comments.size());
-		for(Comment comment:comments)
-			System.out.println("#"+comment.getId()+" "+comment.getSponsor().getId()+" "+comment.getCreateTime());
+//		List<Comment> comments = commentService.getCommentsForCheckin(cids.get(0));
+//		assertEquals(3,comments.size());
+//		for(Comment comment:comments)
+//			System.out.println("#"+comment.getId()+" "+comment.getSponsor().getId()+" "+comment.getCreateTime());
 	}
  
 

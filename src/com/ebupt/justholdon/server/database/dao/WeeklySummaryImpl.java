@@ -1,5 +1,8 @@
 package com.ebupt.justholdon.server.database.dao;
 
+import java.util.Arrays;
+
+import org.hibernate.criterion.Order;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +19,7 @@ public class WeeklySummaryImpl extends GenericHibernateDaoImpl<WeeklySummary, In
 	public WeeklySummaryImpl()
 	{
 		this(WeeklySummary.class);
+		setGlobalOrder(Arrays.asList(Order.desc("createTime")));
 	}
 	 
 }

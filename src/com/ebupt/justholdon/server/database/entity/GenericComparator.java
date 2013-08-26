@@ -1,24 +1,25 @@
 package com.ebupt.justholdon.server.database.entity;
 
 import java.util.Comparator;
-
+@SuppressWarnings("rawtypes")
 public class GenericComparator {
 	public GenericComparator() {
 	};
 
-	private Comparator<BaseEntity<Number>> dateComparator = new Comparator<BaseEntity<Number>>() {
+	private Comparator dateComparator = new Comparator<BaseEntity<Number>>() {
 		@Override
 		public int compare(BaseEntity<Number> arg0, BaseEntity<Number> arg1) {
-			int comp =  (int) (arg1.getCreateTime().getTime() - arg0.getCreateTime()
-					.getTime());
+			Long comp =   arg1.getCreateTime().getTime() - arg0.getCreateTime()
+					.getTime();
 			if( 0 == comp)
 				return (int) (arg1.getId().longValue() - arg0.getId().longValue());
-			return comp;
+			if(comp > 0) return 1;
+			return -1;
 		}
 
 	};
 
-	private Comparator<BaseEntity<Number>> idComparator = new Comparator<BaseEntity<Number>>() {
+	private Comparator idComparator = new Comparator<BaseEntity<Number>>() {
 		@Override
 		public int compare(BaseEntity<Number> arg0, BaseEntity<Number> arg1) {
 			return (int) (arg1.getId().longValue() - arg0.getId().longValue());
@@ -26,7 +27,6 @@ public class GenericComparator {
 
 	};
 
-	@SuppressWarnings("rawtypes")
 	public Comparator getDateComparator() {
 		return dateComparator;
 	}
@@ -37,7 +37,7 @@ public class GenericComparator {
 		return instance;
 	}
 
-	public Comparator<BaseEntity<Number>> getIdComparator() {
+	public Comparator getIdComparator() {
 		return idComparator;
 	}
 
